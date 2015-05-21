@@ -1,0 +1,26 @@
+nav {
+	border:5px;
+	background-color: #d9534f;
+  	border-color: #d43f3a;
+}
+
+h1 {
+	font-family: serif;
+	font-style: bold;
+	font-color:#d43f3a;
+}
+
+.navbar-brand {
+	padding: 0px;
+}
+
+footer {
+	border: 1px;
+	background-color: #d9534f;
+  	border-color: #d43f3a;
+}
+
+footer h2 {
+	font-weight: bold;
+	font-family: sans-serif;
+}
