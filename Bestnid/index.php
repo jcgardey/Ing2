@@ -9,9 +9,8 @@
 		<!-- Optional theme -->
 		<link rel="stylesheet" href="Bootstrap/css/bootstrap-theme.min.css">
 		<link rel="stylesheet" href="estilopropio.css">
-
-		<!-- Latest compiled and minified JavaScript -->
-
+		<script src="Bootstrap/js/jquery.js"></script>
+		<script src="Bootstrap/js/bootstrap.js"></script>
 	</head>
 	<body>
 		<header>
@@ -59,40 +58,48 @@
 								<a class="navbar-brand" href="registrarse.php">Ayuda</a>
 							</li>	
 						</ul>
+						<!-- Inicio de sesión -->
 						<form class="navbar-form navbar-right" id="formulario" action="validarSesion.php" method="POST">
 							<div class="form-group">
 								<div id="user">
-									<label class="sr-only" for="exampleInputEmail3">User</label>
-									<input name="input_user" type="email" class="form-control" id="exampleInputEmail3" placeholder="Usuario">
+									<label class="sr-only" for="exampleInputEmail3">Usuario</label>
+									<input name="input_user" type="text" class="form-control" id="exampleInputEmail3" placeholder="Usuario">
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="sr-only" for="exampleInputPassword3">Password</label>
+								<label class="sr-only" for="exampleInputPassword3">Contraseña</label>
 								<input name="input_password" type="password" class="form-control" id="exampleInputPassword3" placeholder="Contraseña">
 							</div>
 							<div class="checkbox">
 								<label>
-									<input type="checkbox"> Remember me
+									<input type="checkbox"> Recordarme
 								</label>
 							</div>
-							<button type="submit" class="btn btn-danger">Sign in</button>
+							<button type="submit" id= "btn_entrar" class="btn btn-danger">Entrar</button>
 							<?php
 								if ( (isset($_GET["error"]) ) && ($_GET["error"]=="si") ) { ?>
 									<p class="text-warning">¡Datos incorrectos!</p>
 							<?php } ?>
 						</form>
+						<!--Fin Inicio de Sesión -->
 					</div>
 				</div><!-- /.container-fluid -->
 			</nav>
 		</header>
-		<footer>
-			<div class="container">
-				<div class="col-md-8 col-md-offset-3">
-					<h2>Sistema de Subastas Bestnid</h2>
-				</div>
-			</div>
-		</footer>
-		<script src="Bootstrap/js/jquery.js"></script>
-		<script src="Bootstrap/js/bootstrap.js"></script>
+		<section class="main container-fluid">
+			<aside class="row">	
+				<div class="col-sm-3 col-md-2 sidebar">
+		        	<ul class="nav nav-sidebar"> 	
+			            <?php			          
+							include("conexion.php");
+							$result = mysqli_query ($link, "SELECT nombre FROM Categoria");
+							while ($row=mysqli_fetch_array($result) ) {
+								echo "<li><a href=#>".$row["nombre"]."</a></li>";
+							}
+						?>
+			        </ul>
+		        </div>
+		     </aside>
+		</section>
 	</body>
 </html>

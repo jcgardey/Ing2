@@ -1,8 +1,3 @@
-nav {
-	border:5px;
-	background-color: #d9534f;
-  	border-color: #d43f3a;
-}
 
 h1 {
 	font-family: serif;
@@ -12,6 +7,10 @@ h1 {
 
 .navbar-brand {
 	padding: 0px;
+}
+
+.nav-sidebar {
+	font-color: white;
 }
 
 footer {
