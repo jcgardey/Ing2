@@ -26,26 +26,17 @@
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 						</button>
-					<a class="navbar-brand" rel="home" href="home.php" title="Logotipo">
-        				<img style="max-height:100%;,max-width:100%;" src="logo.png" />
-    				</a>
+						<a class="navbar-brand" rel="home" href="home.php" title="Logotipo">
+	        				<img style="max-height:100%;,max-width:100%;" src="logo.png" />
+	    				</a>
 					</div>
+					<ul class="nav navbar-nav navbar-left">	
+							<li>
+								<a class="navbar-brand" href="home.php">Bestnid</a>
+							</li>			
+					</ul>
 					<!-- Collect the nav links, forms, and other content for toggling -->
 					<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-						<ul class="nav navbar-nav">
-							<li class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Productos<span class="caret"></span></a>
-								<ul class="dropdown-menu" role="menu">
-									<?php			          
-									include("conexion.php");
-									$result = mysqli_query ($link, "SELECT nombre FROM Categoria");
-									while ($row=mysqli_fetch_array($result) ) {
-											echo "<li><a href=#>".$row["nombre"]."</a></li>";
-									}
-									?>	  
-								</ul>
-							</li>
-						</ul>
 						<form class="navbar-form navbar-left" role="search">
 							<div class="form-group">
 								<input type="text" class="form-control" placeholder="Buscar producto">
