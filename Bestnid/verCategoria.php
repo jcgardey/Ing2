@@ -9,8 +9,11 @@
 		<!-- Optional theme -->
 		<link rel="stylesheet" href="Bootstrap/css/bootstrap-theme.min.css">
 		<link rel="stylesheet" href="estilopropio.css">
+
 		<script src="Bootstrap/js/jquery.js"></script>
 		<script src="Bootstrap/js/bootstrap.js"></script>
+		<script src="Bootstrap/js/validarRegistro.js"></script>
+	
 	</head>
 	<body>
 		<header>
@@ -24,15 +27,16 @@
 							<span class="icon-bar"></span>
 							<span class="icon-bar"></span>
 						</button>
-						<a class="navbar-brand" rel="home" href="home.php" title="Logotipo">
-	        				<img style="max-height:100%;,max-width:100%;" src="logo.png" />
-	    				</a>
+					<a class="navbar-brand" rel="home" href="index.php" title="Logotipo">
+        				<img style="max-height:100%;,max-width:100%;" src="logo.png" />
+    				</a>
 					</div>
 					<ul class="nav navbar-nav navbar-left">	
 							<li>
 								<a class="navbar-brand" href="home.php">Bestnid</a>
 							</li>			
 					</ul>
+					<!-- Collect the nav links, forms, and other content for toggling -->
 					<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 						<form class="navbar-form navbar-left" role="search">
 							<div class="form-group">
@@ -52,13 +56,13 @@
 						<form class="navbar-form navbar-right" id="formulario" action="validarSesion.php" method="POST">
 							<div class="form-group">
 								<div id="user">
-									<label class="sr-only" for="inputUser">Usuario</label>
-									<input name="input_user" type="text" class="form-control" id="inputUser" placeholder="Usuario">
+									<label class="sr-only" for="exampleInputEmail3">Usuario</label>
+									<input name="input_user" type="text" class="form-control" id="exampleInputEmail3" placeholder="Usuario">
 								</div>
 							</div>
 							<div class="form-group">
-								<label class="sr-only" for="inputPassword">Contraseña</label>
-								<input name="input_password" type="password" class="form-control" id="inputPassword" placeholder="Contraseña">
+								<label class="sr-only" for="exampleInputPassword3">Contraseña</label>
+								<input name="input_password" type="password" class="form-control" id="exampleInputPassword3" placeholder="Contraseña">
 							</div>
 							<div class="checkbox">
 								<label>
@@ -68,7 +72,7 @@
 							<button type="submit" id= "btn_entrar" class="btn btn-danger">Entrar</button>
 							<?php
 								if ( (isset($_GET["error"]) ) && ($_GET["error"]=="si") ) { ?>
-									<p class="text-danger">¡Datos incorrectos!</p>
+									<p class="text-warning">¡Datos incorrectos!</p>
 							<?php } ?>
 						</form>
 						<!--Fin Inicio de Sesión -->
@@ -76,21 +80,28 @@
 				</div><!-- /.container-fluid -->
 			</nav>
 		</header>
-		<section class="main container-fluid">
-			<aside class="row">	
-				<div class="col-sm-3 col-md-2 sidebar">
-		        	<ul class="nav nav-sidebar"> 	
-			            <li class="active"><a class="text-danger" href="#"><strong>Categorias</strong></a></li>
-			            <?php			          
-							include("conexion.php");
-							$result = mysqli_query ($link, "SELECT nombre FROM Categoria");
-							while ($row=mysqli_fetch_array($result) ) {
-								echo "<li><a class='text-danger' href=#>".$row["nombre"]."</a></li>";
-							}
-						?>
-			        </ul>
-		        </div>
-		     </aside>
+		<section class="main container">
+			<div class="row">
+				<div class="col-md-3">
+					<h2>Confirmar eliminacio&acute;n</h2>
+				</div>
+				<div class="row well well-lg">
+					<div class="col-md-6">
+					<h1><?php echo $_GET["nombreCategoria"]; ?></h1>
+					<h3>Descripcion:</h3>
+					<p class='lead'><?php echo $_GET["descripcion"]; ?></p>
+					<a class="btn btn-lg btn-danger" href=<?php echo "eliminarCategoria.php?id=".$_GET["id"]."";?> >Confirmar</a>
+					<a class="btn btn-lg btn-default" href="listadoCategorias.php">Cancelar</a>
+					</div>
+				</div>
+			</div>
 		</section>
+		<footer>
+			<div class="container">
+				<div class="col-md-8 col-md-offset-3">
+					<h2>Sistema de Subastas Bestnid</h2>
+				</div>
+			</div>
+		</footer>
 	</body>
 </html>

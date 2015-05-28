@@ -9,10 +9,17 @@
 	else {
 			$result = mysqli_query ($link, "INSERT INTO `bestnid`.`usuario` (`nombre`,`apellido`,`telefono`, `nombre_usuario`,
 				`password`, `e_mail`, `confirmado`, `estado`,`calle`,`numero_calle`,`piso`,`depto`) VALUES ('".$_POST["nombres"]."',
-			'".$_POST["apellidos"]."', '".$_POST["telefono"]."', '".$_POST["nombreUsuario"]."', '".$_POST["password"]."',
-			'".$_POST["email"]."', 0, 'activo', '".$_POST["domicilioCalle"]."', '".$_POST["domicilioNumero"]."',
+			'".$_POST["apellidos"]."', '".$_POST["telefono"]."', '".$_POST["nombreUsuario"]."', '".$_POST["pass"]."',
+			'".$_POST["e_mail"]."', 0, 'activo', '".$_POST["domicilioCalle"]."', '".$_POST["domicilioNumero"]."',
 			 '".$_POST["domicilioPiso"]."','".$_POST["domicilioDepto"]."') ");
+
 		session_start();
+		if ($_POST["nombreUsuario"]=="admin") {
+			$_SESSION["admin"]=true;
+		}
+		else {
+			$_SESSION["admin"]=false;	
+		}
 		$_SESSION["autentificado"]=true;
 		$_SESSION["usuario"]= $_POST["nombreUsuario"];
 		$result = mysqli_query ($link, "SELECT idUsuario FROM Usuario WHERE nombre_usuario='".$_POST["nombreUsuario"]."' ");

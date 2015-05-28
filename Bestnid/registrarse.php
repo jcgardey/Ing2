@@ -108,7 +108,7 @@
 						</div>
 						<div class="form-group">
 							<label for="inputEmail">Email<span class="text-danger">*</span></label>
-							<input type="email" class="form-control" name="email" id="inputEmail" placeholder="alguien@ejemplo.com">
+							<input type="email" class="form-control" name="e_mail" id="inputEmail" placeholder="alguien@ejemplo.com">
 							<div id="campoEmail">
 							</div>
 						</div>
@@ -131,7 +131,7 @@
 						</div>
 						<div class="form-group">
 							<label for="inputPassword">Contraseña<span class="text-danger">*</span></label>
-							<input type="password" class="form-control" name="password" id="inputPassword" placeholder="entre 6 y 20 caracteres, al menos una letra mayúscula, una minúscula y un caracter especial o número">
+							<input type="password" class="form-control" name="pass" id="inputPassword" placeholder="entre 6 y 20 caracteres, al menos una letra mayúscula, una minúscula y un caracter especial o número">
 							<div id="campoPassword">
 							</div>
 						</div>

@@ -1,3 +1,4 @@
+<?php include("session.php"); ?>
 <DOCTYPE html>
 <html lang="es">
 	<head>
@@ -9,9 +10,16 @@
 		<!-- Optional theme -->
 		<link rel="stylesheet" href="Bootstrap/css/bootstrap-theme.min.css">
 		<link rel="stylesheet" href="estilopropio.css">
+
 		<script src="Bootstrap/js/jquery.js"></script>
 		<script src="Bootstrap/js/bootstrap.js"></script>
+		<script src="Bootstrap/js/validarCategoria.js"></script>
 	</head>
+	<script>
+		window.onload = function () {
+			document.getElementById("b_ingresar").onclick = validarInsercionCategoria;
+		}
+	</script>
 	<body>
 		<header>
 			<nav class="navbar navbar-default">
@@ -33,6 +41,7 @@
 								<a class="navbar-brand" href="home.php">Bestnid</a>
 							</li>			
 					</ul>
+					<!-- Collect the nav links, forms, and other content for toggling -->
 					<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 						<form class="navbar-form navbar-left" role="search">
 							<div class="form-group">
@@ -41,56 +50,65 @@
 							<button type="submit" class="btn btn-default">Buscar</button>
 						</form>
 						<ul class="nav navbar-nav navbar-right">	
-							<li>
-								<a class="navbar-brand" href="registrarse.php">Registrarse</a>
-							</li>
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $_SESSION["usuario"]?><span class="caret"></span></a>
+								<ul class="dropdown-menu" role="menu">
+									<li><a href="salir.php">Salir</a></li>
+									<li><a href="#">Configuracion</a></li>
+								</ul>
 							<li>
 								<a class="navbar-brand" href="registrarse.php">Ayuda</a>
 							</li>	
 						</ul>
-						<!-- Inicio de sesión -->
-						<form class="navbar-form navbar-right" id="formulario" action="validarSesion.php" method="POST">
-							<div class="form-group">
-								<div id="user">
-									<label class="sr-only" for="inputUser">Usuario</label>
-									<input name="input_user" type="text" class="form-control" id="inputUser" placeholder="Usuario">
-								</div>
-							</div>
-							<div class="form-group">
-								<label class="sr-only" for="inputPassword">Contraseña</label>
-								<input name="input_password" type="password" class="form-control" id="inputPassword" placeholder="Contraseña">
-							</div>
-							<div class="checkbox">
-								<label>
-									<input type="checkbox"> Recordarme
-								</label>
-							</div>
-							<button type="submit" id= "btn_entrar" class="btn btn-danger">Entrar</button>
-							<?php
-								if ( (isset($_GET["error"]) ) && ($_GET["error"]=="si") ) { ?>
-									<p class="text-danger">¡Datos incorrectos!</p>
-							<?php } ?>
-						</form>
-						<!--Fin Inicio de Sesión -->
 					</div>
 				</div><!-- /.container-fluid -->
 			</nav>
 		</header>
 		<section class="main container-fluid">
-			<aside class="row">	
-				<div class="col-sm-3 col-md-2 sidebar">
+			<div class="row">	
+				<aside class="col-sm-3 col-md-2 sidebar">
 		        	<ul class="nav nav-sidebar"> 	
-			            <li class="active"><a class="text-danger" href="#"><strong>Categorias</strong></a></li>
 			            <?php			          
 							include("conexion.php");
 							$result = mysqli_query ($link, "SELECT nombre FROM Categoria");
 							while ($row=mysqli_fetch_array($result) ) {
-								echo "<li><a class='text-danger' href=#>".$row["nombre"]."</a></li>";
+								echo "<li><a class='text-danger'href=#>".$row["nombre"]."</a></li>";
 							}
 						?>
 			        </ul>
+		        </aside>
+		        <div class="col-md-3">
+		        	<h2>Ingresar una categoria</h2>
 		        </div>
-		     </aside>
+		        <div class="col-md-7">
+		        	<form name="frm-altaCategoria" id="f_altaCategoria" action="insertarCategoria.php" method="POST">
+						<div class="form-group">
+							<label for="inputNombre">Nombre<span class="text-danger">*</span></label>
+							<input type="text" class="form-control" name="nombreCategoria" id="inputNombre">
+							<?php
+								if ( (isset($_GET["error"]) ) && ($_GET["error"]=="si") ) { ?>
+									<p class="text-danger">Existe una categoria con ese nombre</p>
+							<?php } ?>
+							<div id="campoNombreCategoria">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputDescripcion">Descripcion<span class="text-danger">*</span></label>
+							<textarea class="form-control" name="descripcionCategoria" id="inputDescripcion" rows="5"></textarea>
+							<div id="campoDescripcionCategoria">
+							</div>
+						</div>
+						<button class="btn btn-danger" type="button" id="b_ingresar">Ingresar</button>
+					</form>
+		        </div>
+		     </div>
 		</section>
+		<footer>
+			<div class="container">
+				<div class="col-md-8 col-md-offset-3">
+					<h2>Sistema de Subastas Bestnid</h2>
+				</div>
+			</div>
+		</footer>
 	</body>
 </html>

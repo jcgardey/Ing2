@@ -15,66 +15,31 @@
 		<script src="Bootstrap/js/bootstrap.js"></script>
 	</head>
 	<body>
-		<header>
-			<nav class="navbar navbar-default">
-				<div class="container-fluid">
-				 	<!-- Brand and toggle get grouped for better mobile display -->
-					<div class="navbar-header">
-						<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-							<span class="sr-only">Toggle navigation</span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-							<span class="icon-bar"></span>
-						</button>
-						<a class="navbar-brand" rel="home" href="home.php" title="Logotipo">
-	        				<img style="max-height:100%;,max-width:100%;" src="logo.png" />
-	    				</a>
-					</div>
-					<ul class="nav navbar-nav navbar-left">	
-							<li>
-								<a class="navbar-brand" href="home.php">Bestnid</a>
-							</li>			
-					</ul>
-					<!-- Collect the nav links, forms, and other content for toggling -->
-					<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-						<form class="navbar-form navbar-left" role="search">
-							<div class="form-group">
-								<input type="text" class="form-control" placeholder="Buscar producto">
-							</div>
-							<button type="submit" class="btn btn-default">Buscar</button>
-						</form>
-						<ul class="nav navbar-nav navbar-right">	
-							<li class="dropdown">
-								<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $_SESSION["usuario"]?><span class="caret"></span></a>
-								<ul class="dropdown-menu" role="menu">
-									<li><a href="salir.php">Salir</a></li>
-									<li><a href="#">Configuracion</a></li>
-								</ul>
-							<li>
-								<a class="navbar-brand" href="registrarse.php">Ayuda</a>
-							</li>	
-						</ul>
-					</div>
-				</div><!-- /.container-fluid -->
-			</nav>
-		</header>
+		<?php include ("navbarAdmin.html"); ?>
 		<section class="main container-fluid">
 			<aside class="row">	
 				<div class="col-sm-3 col-md-2 sidebar">
 		        	<ul class="nav nav-sidebar"> 	
+			             <li class="active"><a class="text-danger" href="#"><strong>Categorias</strong></a></li>
 			            <?php			          
 							include("conexion.php");
 							$result = mysqli_query ($link, "SELECT nombre FROM Categoria");
 							while ($row=mysqli_fetch_array($result) ) {
-								echo "<li><a href=#>".$row["nombre"]."</a></li>";
+								echo "<li><a class='text-danger' href=#>".$row["nombre"]."</a></li>";
 							}
 						?>
 			        </ul>
 		        </div>
 		        <div class="col-sm-3 col-md-9">
+		        	<div class="row">
+		        		<div class="col-md-3 col-md-offset-5">
+		        			<a class="btn btn-danger" href="altaCategoria.php">Ingresar categoria</a>
+		        		</div>
+		        	</div>
+		        	<br />
 		        	<?php			          
 						include("conexion.php");
-						$result = mysqli_query ($link, "SELECT nombre FROM Categoria");
+						$result = mysqli_query ($link, "SELECT * FROM Categoria");
 						while ($row=mysqli_fetch_array($result) ) {
 							echo "<div class='panel panel-default row'>
   									<div class=panel-body>
@@ -82,10 +47,10 @@
     										".$row["nombre"]."
     									</div>
     									<div class='col-md-1'>
-    										<a class='btn btn-danger' href='editarCategoria.php?nombreCategoria=".$row["nombre"]."' role='button'>Editar</a>
+    										<a class='btn btn-danger' href='editarCategoria.php?nombreCategoria=".$row["nombre"]."&descripcion=".$row["descripcion"]."&id=".$row["idCategoria"]."' role='button'>Editar</a>
     									</div>
     									<div class='col-md-1'>
-    										<a class='btn btn-danger' href='#' role='button'>Eliminar</a>
+    										<a class='btn btn-danger' href='verCategoria.php?nombreCategoria=".$row["nombre"]."&descripcion=".$row["descripcion"]."&id=".$row["idCategoria"]."' role='button'>Eliminar</a>
     									</div>
   								  	</div>
 								  </div>";

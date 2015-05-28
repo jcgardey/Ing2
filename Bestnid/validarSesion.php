@@ -8,6 +8,13 @@
 		$_SESSION ["autentificado"]=true;
 		$_SESSION ["usuario"]= $_POST["input_user"];
 		$_SESSION ["idUsuario"]=$row["idUsuario"];
+
+		if ($_POST["input_user"]=="admin") {
+			$_SESSION["admin"]=true;
+		}
+		else {
+			$_SESSION["admin"]=false;	
+		}
 		header("Location: home.php");
 	}
 	else {
