@@ -59,19 +59,36 @@
 			</nav>
 		</header>
 		<section class="main container-fluid">
-			<aside class="row">	
-				<div class="col-sm-3 col-md-2 sidebar">
+			<div class="row">	
+				<aside class="col-sm-3 col-md-2 sidebar">
 		        	<ul class="nav nav-sidebar"> 	
 			            <?php			          
 							include("conexion.php");
 							$result = mysqli_query ($link, "SELECT nombre FROM Categoria");
 							while ($row=mysqli_fetch_array($result) ) {
-								echo "<li><a href=#>".$row["nombre"]."</a></li>";
+								echo "<li><a class='btn btn-danger'href=#>".$row["nombre"]."</a></li>";
 							}
 						?>
 			        </ul>
+		        </aside>
+		        <div class="col-md-10">
+		        	<form name="frm-editarCategoria" id="f_editarCategoria" action="validarEditarCategoria.php" method="POST">
+						<div class="form-group">
+							<label for="inputNombre">Nombre<span class="text-danger">*</span></label>
+							<input type="text" class="form-control" name="nombreCategoria" id="inputNombre" value=<?php echo $_GET["nombreCategoria"] ?> >
+							<div id="campoNombreCategoria">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="inputDescripcion">Descripcion<span class="text-danger">*</span></label>
+							<textarea class="form-control" name="descripcionCategoria" id="inputDescripcion" rows="5"></textarea>
+							<div id="campoDescripcionCategoria">
+							</div>
+						</div>
+						<button class="btn btn-danger" type="button">Editar</button>
+					</form>
 		        </div>
-		     </aside>
+		     </div>
 		</section>
 		<footer>
 			<div class="container">

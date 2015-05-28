@@ -15,6 +15,9 @@
 		session_start();
 		$_SESSION["autentificado"]=true;
 		$_SESSION["usuario"]= $_POST["nombreUsuario"];
+		$result = mysqli_query ($link, "SELECT idUsuario FROM Usuario WHERE nombre_usuario='".$_POST["nombreUsuario"]."' ");
+		$row=mysqli_fetch_array($result);
+		$_SESSION["idUsuario"]= $row["idUsuario"];
 		header("Location: home.php");
 	} 
 

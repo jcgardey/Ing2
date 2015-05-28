@@ -71,6 +71,27 @@
 						?>
 			        </ul>
 		        </div>
+		        <div class="col-sm-3 col-md-9">
+		        	<?php			          
+						include("conexion.php");
+						$result = mysqli_query ($link, "SELECT nombre FROM Categoria");
+						while ($row=mysqli_fetch_array($result) ) {
+							echo "<div class='panel panel-default row'>
+  									<div class=panel-body>
+  										<div class='col-md-10'>
+    										".$row["nombre"]."
+    									</div>
+    									<div class='col-md-1'>
+    										<a class='btn btn-danger' href='editarCategoria.php?nombreCategoria=".$row["nombre"]."' role='button'>Editar</a>
+    									</div>
+    									<div class='col-md-1'>
+    										<a class='btn btn-danger' href='#' role='button'>Eliminar</a>
+    									</div>
+  								  	</div>
+								  </div>";
+						}
+					?>
+		        </div>
 		     </aside>
 		</section>
 		<footer>
