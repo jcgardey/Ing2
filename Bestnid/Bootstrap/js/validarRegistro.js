@@ -68,7 +68,7 @@ function validarTelefono () {
 }
 
 function validarDomicilio () {
-	var expRegNumero=/[0-9]/;
+	var expRegNumero=/^[0-9]$/;
 	var expRegDepto=/^[a-zA-Z]{1}$/;
 	var expRegCalle=/^[a-zA-ZÑñÁáÉéÍíÓóÚúÜü\s]+$/;
 	if (!expRegCalle.exec(document.getElementById("inputCalle").value) && !expRegNumero.exec(document.getElementById("inputCalle").value) ) {

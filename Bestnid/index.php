@@ -90,6 +90,27 @@
 						?>
 			        </ul>
 		        </div>
+		        <div class="col-sm-3 col-md-9">
+		        	<?php			          
+						include("conexion.php");
+						$result = mysqli_query ($link, "SELECT * FROM Subasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto ORDER BY fecha_realizacion");
+						while ($row=mysqli_fetch_array($result) ) {
+							echo "<div class='panel panel-default row'>
+  									<div class=panel-body>
+  										<div class='col-md-5'>
+    										<img src='".$row["imagen"]."' class='img-responsive' style='max-width: 300px; max-height:200px' alt='imagen' />
+    									</div>
+    									<div class='col-md-6'>
+    										<h3>".$row["nombre"]."</h3>
+    									</div>
+    									<div class='col-md-1'>
+    										<a class='btn btn-danger' href='#'>Ver</a>
+    									</div>
+  								  	</div>
+								  </div>";
+						}
+					?>
+		        </div>
 		     </aside>
 		</section>
 	</body>

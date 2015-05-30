@@ -1,4 +1,5 @@
 <?php
+	include("sessionAdmin.php");
 	include("conexion.php");
 	$result = mysqli_query ($link, "SELECT * FROM Categoria WHERE nombre='".$_POST["nombreCategoria"]."' ");
 	$num = mysqli_num_rows($result);

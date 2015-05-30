@@ -1,4 +1,4 @@
-<?php include("session.php"); ?>
+<?php include("sessionAdmin.php"); ?>
 <DOCTYPE html>
 <html lang="es">
 	<head>

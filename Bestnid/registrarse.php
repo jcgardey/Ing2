@@ -8,12 +8,15 @@
 
 		<!-- Optional theme -->
 		<link rel="stylesheet" href="Bootstrap/css/bootstrap-theme.min.css">
+		
 		<link rel="stylesheet" href="estilopropio.css">
+		<link rel="stylesheet" href="Bootstrap/css/jquery-ui.css" />
 
-		<script src="Bootstrap/js/jquery.js"></script>
 		<script src="Bootstrap/js/bootstrap.js"></script>
 		<script src="Bootstrap/js/validarRegistro.js"></script>
-	
+		<script src="Bootstrap/js/jquery-1.11.3.js"></script>
+		<script src="Bootstrap/js/jquery-ui.js"></script>
+				
 	</head>
 	<body>
 		<header>
@@ -154,7 +157,5 @@
 				</div>
 			</div>
 		</footer>
-		<script src="Bootstrap/js/jquery.js"></script>
-		<script src="Bootstrap/js/bootstrap.js"></script>
 	</body>
 </html>
