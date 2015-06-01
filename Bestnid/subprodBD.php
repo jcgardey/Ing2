@@ -16,7 +16,7 @@
 	$row=mysqli_fetch_array($result);
 	
 	$result = mysqli_query ($link, "INSERT INTO `bestnid`.`subasta` (`idUsuario`,`fecha_cierre`, `estado`, `idProducto`, `fecha_realizacion`) 
-		VALUES ('".$_SESSION["idUsuario"]."', STR_TO_DATE('".$_GET["fecha"]."','%m/%d/%Y'), '".$estado."', '".$row["idProducto"]."', current_date() ) ");
+		VALUES ('".$_SESSION["idUsuario"]."', STR_TO_DATE('".$_GET["fecha"]."','%d/%m/%Y'), '".$estado."', '".$row["idProducto"]."', current_date() ) ");
 	
 	header("Location: home.php");
 ?>

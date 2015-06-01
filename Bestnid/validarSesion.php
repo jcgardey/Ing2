@@ -9,7 +9,10 @@
 		$_SESSION ["usuario"]= $_POST["input_user"];
 		$_SESSION ["idUsuario"]=$row["idUsuario"];
 
-		if ($_POST["input_user"]=="admin") {
+		$result = mysqli_query ($link, " SELECT * FROM Configuracion WHERE clave='administrador' and 
+		valor='".$_POST["input_user"]."' ");
+
+		if (mysqli_num_rows($result)==1) {
 			$_SESSION["admin"]=true;
 		}
 		else {

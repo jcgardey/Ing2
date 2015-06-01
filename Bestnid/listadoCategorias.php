@@ -1,5 +1,5 @@
 <?php include("sessionAdmin.php"); ?>
-<DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 	<head>
 		<meta charset="utf-8">
@@ -48,11 +48,15 @@
     									</div>
     									<div class='col-md-1'>
     										<a class='btn btn-danger' href='editarCategoria.php?nombreCategoria=".$row["nombre"]."&descripcion=".$row["descripcion"]."&id=".$row["idCategoria"]."' role='button'>Editar</a>
-    									</div>
-    									<div class='col-md-1'>
+    									</div>";
+    								if ($row["nombre"]!="Otros") {
+    									echo
+    									"<div class='col-md-1'>
     										<a class='btn btn-danger' href='verCategoria.php?nombreCategoria=".$row["nombre"]."&descripcion=".$row["descripcion"]."&id=".$row["idCategoria"]."' role='button'>Eliminar</a>
-    									</div>
-  								  	</div>
+    									</div>";
+    								}
+  								  	echo
+  								  	"</div>
 								  </div>";
 						}
 					?>

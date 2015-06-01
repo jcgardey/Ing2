@@ -34,7 +34,7 @@
 							include("conexion.php");
 							$result = mysqli_query ($link, "SELECT nombre FROM Categoria");
 							while ($row=mysqli_fetch_array($result) ) {
-								echo "<li><a class='text-danger'href=#>".$row["nombre"]."</a></li>";
+								echo "<li><a class='text-danger' href='listadoProductosPorCategoria.php?nombre=".$row["nombre"]." '>".$row["nombre"]."</a></li>";
 							}
 						?>
 			        </ul>

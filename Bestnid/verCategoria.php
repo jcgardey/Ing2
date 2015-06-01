@@ -17,19 +17,31 @@
 	
 	</head>
 	<body>
-		<?php includes ("navbarAdmin.php"); ?>
-		<section class="main container">
-			<div class="row">
-				<div class="col-md-3">
-					<h2>Confirmar eliminacio&acute;n</h2>
-				</div>
-				<div class="row well well-lg">
-					<div class="col-md-6">
-					<h1><?php echo $_GET["nombreCategoria"]; ?></h1>
-					<h3>Descripcion:</h3>
-					<p class='lead'><?php echo $_GET["descripcion"]; ?></p>
-					<a class="btn btn-lg btn-danger" href=<?php echo "eliminarCategoria.php?id=".$_GET["id"]."";?> >Confirmar</a>
-					<a class="btn btn-lg btn-default" href="listadoCategorias.php">Cancelar</a>
+		<?php include ("navbarAdmin.html"); ?>
+		<section class="main container-fluid">
+			<div class="main row">
+				<div class="col-sm-3 col-md-2 sidebar">
+		        	<ul class="nav nav-sidebar"> 	
+			            <li class="active"><a class="text-danger" href="#"><strong>Categorias</strong></a></li>
+			            <?php			          
+							include("conexion.php");
+							$result = mysqli_query ($link, "SELECT nombre FROM Categoria");
+							while ($row=mysqli_fetch_array($result) ) {
+								echo "<li><a class='text-danger' href='listadoProductosPorCategoria.php?nombre=".$row["nombre"]." '>".$row["nombre"]."</a></li>";
+							}
+						?>
+			        </ul>
+		        </div>
+		        <div class="col-md-10 well well-lg">
+					<div class="col-md-3">
+						<h2>Confirmar eliminaci&oacute;n</h2>
+					</div>
+					<div class="col-md-7">
+						<h1><?php echo $_GET["nombreCategoria"]; ?></h1>
+						<h3>Descripci&oacute;n:</h3>
+						<p class='lead'><?php echo $_GET["descripcion"]; ?></p>
+						<a class="btn btn-lg btn-danger" href=<?php echo "eliminarCategoria.php?id=".$_GET["id"]."";?> >Confirmar</a>
+						<a class="btn btn-lg btn-default" href="listadoCategorias.php">Cancelar</a>
 					</div>
 				</div>
 			</div>

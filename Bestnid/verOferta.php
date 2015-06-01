@@ -48,7 +48,7 @@
 						<a class="btn btn-lg btn-danger" href="<?php echo "altaOfertaBD.php?monto=".$_POST["monto"]."
 						&razon=".$_POST["razon"]."
 						&idSubasta=".$_POST["idSubasta"]." "; ?>" >Finalizar</a>
-						<a class="btn btn-lg btn-default" href="altaOferta.php">Reiniciar</a>
+						<a class="btn btn-lg btn-default" href=<?php echo "altaOferta.php?idSubasta=".$_POST["idSubasta"]." ";?> >Reiniciar</a>
 					</div>
 					<div class="col-md-3">
 						<img src=<?php echo $row["imagen"]; ?> style=" max width:300px; max height:200px;" class="img-responsive" alt="imagen" />
