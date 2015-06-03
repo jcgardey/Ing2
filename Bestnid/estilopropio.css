@@ -13,13 +13,13 @@ h1 {
 	font-color: white;
 }
 
-footer {
-	border: 1px;
-	background-color: #d9534f;
-  	border-color: #d43f3a;
-}
-
 footer h2 {
 	font-weight: bold;
 	font-family: sans-serif;
+}
+
+footer a {
+	font-weight: bold;
+	font-family: sans-serif;
+	font-color:white;
 }

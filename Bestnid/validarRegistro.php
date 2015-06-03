@@ -14,7 +14,11 @@
 			 '".$_POST["domicilioPiso"]."','".$_POST["domicilioDepto"]."') ");
 
 		session_start();
-		if ($_POST["nombreUsuario"]=="admin") {
+		
+		$result = mysqli_query ($link, " SELECT * FROM Configuracion WHERE clave='administrador' and 
+		valor='".$_POST["input_user"]."' ");
+
+		if (mysqli_num_rows($result)==1) {
 			$_SESSION["admin"]=true;
 		}
 		else {

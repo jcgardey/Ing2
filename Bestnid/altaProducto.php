@@ -15,8 +15,41 @@
 		<script src="Bootstrap/js/jquery-1.11.3.js"></script>
 		<script src="Bootstrap/js/bootstrap.js"></script>
 		<script src="Bootstrap/js/jquery-ui.js"></script>
-		<script src="Bootstrap/js/fechaEspañol.js"></script>
 		<script src="Bootstrap/js/validarProducto.js"></script>
+		<script>
+			 $.datepicker.regional['es'] = {
+			 closeText: 'Cerrar',
+			 prevText: '<Ant',
+			 nextText: 'Sig>',
+			 currentText: 'Hoy',
+			 monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+			 monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
+			 dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+			 dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
+			 dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
+			 weekHeader: 'Sm',
+			 dateFormat: 'dd/mm/yy',
+			 firstDay: 1,
+			 isRTL: false,
+			 showMonthAfterYear: false,
+			 yearSuffix: ''
+			 };
+			 $.datepicker.setDefaults($.datepicker.regional['es']);
+			
+			
+			 <?php
+			 	include("conexion.php");
+			 	$result= mysqli_query ($link, "SELECT * FROM Configuracion WHERE clave='duracion_maxima'");
+			 	$row=mysqli_fetch_array($result);
+			 ?>
+					
+			$(function () {
+			var d=<?php echo $row["valor"]; ?>;
+			var max= "+" + d + "D";
+			$("#datepicker").datepicker({ minDate:"+1D", maxDate:max});
+			});
+		</script>
+
 	</head>
 	<body>
 		<?php 
@@ -43,7 +76,7 @@
 		        </div>
 				<div class="col-md-10">
 					<div class="col-md-3">
-						<h2>Agrega tu Producto</h2>
+						<h2><strong>Agrega tu Producto</strong></h2>
 					</div>
 					<div class="col-md-7">
 						<form name="frm-producto" id="f_producto" method="post" action="subirImagen.php" enctype="multipart/form-data">
@@ -101,10 +134,23 @@
 				</div>
 			</div>
 		</section>
-		<footer>
+		<footer class="btn-danger">
 			<div class="container">
-				<div class="col-md-8 col-md-offset-3">
-					<h2>Sistema de Subastas Bestnid</h2>
+				<div class="row">
+					<div class="col-md-8 col-md-offset-3">
+						<h2>Sistema de Subastas Bestnid</h2>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-2 col-md-offset-2">
+						<a href="home.php">Home</a>
+					</div>
+					<div class="col-md-2 col-md-offset-2">
+						<a href="#">Ayuda</a>
+					</div>
+					<div class="col-md-2 col-md-offset-2">
+						<a href="#">Acerca de Bestnid</a>
+					</div>
 				</div>
 			</div>
 		</footer>

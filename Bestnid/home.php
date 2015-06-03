@@ -41,17 +41,25 @@
 		        	<?php			          
 						include("conexion.php");
 						
-						$result= mysqli_query ($link,"UPDATE Subasta SET estado='finalizada' WHERE fecha_cierre<=current_date()");
+
+						//finalizar aquellas subastas para las que se alcanzo su fecha de fin
+						$result= mysqli_query ($link,"UPDATE Subasta SET estado='finalizada' WHERE estado='activa' and fecha_cierre<=current_date()");
 						
+						//cancelar subastas que finalizaron sin ofertas
+						$result= mysqli_query ($link,"UPDATE Subasta SET estado ='cerrada' WHERE estado='finalizada' and NOT EXISTS (SELECT * FROM Oferta WHERE Oferta.idSubasta=Subasta.idSubasta)");
+
+
 						$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.estado,Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion, Categoria.nombre AS nomCat 
 							FROM Subasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto 
 							INNER JOIN Categoria ON Producto.idCategoria=Categoria.idCategoria ORDER BY Subasta.estado, Subasta.fecha_realizacion");
 						
 						while ($row=mysqli_fetch_array($result) ) {
+							$resultOf=mysqli_query ($link, "SELECT * FROM Oferta WHERE idSubasta='".$row["idSubasta"]."' and idUsuario='".$_SESSION["idUsuario"]."' ");
+							$numRows = mysqli_num_rows ($resultOf);
 							echo "<div class='panel panel-default row'>
   									<div class='panel-body container-fluid'>
-  										<div class='col-md-3'>
-    										<img src='".$row["imagen"]."' class='img-responsive' style='max-width: 150px; max-height:100px' alt='imagen' />
+  										<div class='col-md-2'>
+    										<img src='".$row["imagen"]."' class='img-responsive' alt='imagen' />
     									</div>
     									<div class='col-md-3'>
     										<div class='row'>
@@ -67,25 +75,28 @@
     											<h5><strong>Estado: </strong>".$row["estado"]."</h5>
     										</div>
     									</div>
-    									<div class='col-md-4'>
-    										<h6>".$row["descripcion"]."</h6>
+    									<div class='col-md-5'>
+    										<p>".$row["descripcion"]."</p>
     									</div>
-    									<div class='col-md-1'>
-    										<a class='btn btn-danger' href='verSubasta.php?idSubasta=".$row["idSubasta"]."'>Ver</a>
-    									</div>";
-    								if ($row["estado"]=="activa") {
+    									<div class='col-md-2'>
+    										<a class='btn btn-danger' href='verSubasta.php?idSubasta=".$row["idSubasta"]."'>Ver Producto</a>
+    										<br />
+    									";
+    								if ($row["estado"]=="activa" && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows==0 ) {
     									echo "
-    									<div class='col-md-1'>
     										<a class='btn btn-danger' href='altaOferta.php?idSubasta=".$row["idSubasta"]."'>Ofertar</a>
-    									</div>";
-    								}
-    								if ($row["estado"]=="finalizada" && $row["idUsuario"]==$_SESSION["idUsuario"]) {
+    										 ";
+    								} elseif ($row["estado"]=="activa" && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows>0) {
     									echo "
-    									<div class='col-md-1'>
-    										<a class='btn btn-danger' href='#'>Cerrar</a>
-    									</div>";
+    										 <a class='btn btn-danger' href='#'=".$row["idSubasta"]."'>Editar Oferta</a>
+    										 ";
+    								} elseif ($row["estado"]=="finalizada" && $row["idUsuario"]==$_SESSION["idUsuario"]) {
+    									echo "
+    										 <a class='btn btn-danger' href='elegirGanador.php?idSubasta=".$row["idSubasta"]."'>Elegir Ganador</a>
+    									     ";
     								}
     								echo "
+  								  		</div>
   								  	</div>
 								  </div>";
 						}
@@ -94,10 +105,23 @@
 
 		     </div>
 		</section>
-		<footer>
+		<footer class="btn-danger">
 			<div class="container">
-				<div class="col-md-8 col-md-offset-3">
-					<h2>Sistema de Subastas Bestnid</h2>
+				<div class="row">
+					<div class="col-md-8 col-md-offset-3">
+						<h2>Sistema de Subastas Bestnid</h2>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-2 col-md-offset-2">
+						<a href="home.php">Home</a>
+					</div>
+					<div class="col-md-2 col-md-offset-2">
+						<a href="#">Ayuda</a>
+					</div>
+					<div class="col-md-2 col-md-offset-2">
+						<a href="#">Acerca de Bestnid</a>
+					</div>
 				</div>
 			</div>
 		</footer>

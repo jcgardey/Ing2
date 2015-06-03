@@ -1,4 +1,4 @@
-<?php include("sessionAdmin.php"); ?>
+<?php include ("session.php"); ?>
 <!DOCTYPE html>
 <html lang="es">
 	<head>
@@ -15,7 +15,25 @@
 		<script src="Bootstrap/js/bootstrap.js"></script>
 	</head>
 	<body>
-		<?php include ("navbarAdmin.html"); ?>
+		<?php 
+			
+			//chequear que el usuario logueado es quien realmente hizo la subasta y que la subasta haya finalizado
+			include ("conexion.php");
+			$result=mysqli_query($link, " SELECT * FROM Subasta WHERE idSubasta='".$_GET["idSubasta"]."' and idUsuario='".$_SESSION["idUsuario"]."' and estado='finalizada' " );
+		
+			//chequeo de parámetros
+			if (!isset($_GET["idSubasta"]) || mysqli_num_rows($result)==0) {
+				header("Location: home.php");
+			}
+			
+
+			if ($_SESSION["admin"]==true) {
+				include ("navbarAdmin.html"); 
+			}
+			else {
+				include ("navbar.html"); 
+			}
+		?>
 		<section class="main container-fluid">
 			<aside class="row">	
 				<div class="col-sm-3 col-md-2 sidebar">
@@ -25,41 +43,31 @@
 							include("conexion.php");
 							$result = mysqli_query ($link, "SELECT nombre FROM Categoria");
 							while ($row=mysqli_fetch_array($result) ) {
-								echo "<li><a class='text-danger' href='listadoProductosPorCategoria.php?nombre=".$row["nombre"]." '>".$row["nombre"]."</a></li>";
+								echo "<li><a class='text-danger' href=#>".$row["nombre"]."</a></li>";
 							}
 						?>
 			        </ul>
 		        </div>
 		        <div class="col-sm-3 col-md-9">
-		        	<div class="row">
-		        		<div class="col-md-3 col-md-offset-5">
-		        			<a class="btn btn-danger" href="altaCategoria.php">Ingresar categoria</a>
-		        		</div>
-		        	</div>
-		        	<br />
 		        	<?php			          
 						include("conexion.php");
-						$result = mysqli_query ($link, "SELECT * FROM Categoria");
+						$result = mysqli_query ($link, "SELECT * FROM Oferta INNER JOIN Usuario ON Oferta.idUsuario=Usuario.idUsuario
+							WHERE idSubasta='".$_GET["idSubasta"]."' ");
 						while ($row=mysqli_fetch_array($result) ) {
 							echo "<div class='panel panel-default row'>
   									<div class=panel-body>
-  										<div class='col-md-10'>
-    										".$row["nombre"]."
-    									</div>";
-    								if ($row["nombre"]!="Otros") {	
-    									echo "
+  										<div class='col-md-11'>
+	  										<div class='row'>
+	    										<a href='#'>".$row["nombre_usuario"]."</a>
+	    									</div>
+	    									<div class='row'>
+	    										<p class='lead'>".$row["razon"]."</p>
+	    									</div>
+	    								</div>
     									<div class='col-md-1'>
-    										<a class='btn btn-danger' href='editarCategoria.php?id=".$row["idCategoria"]."' role='button'>Editar</a>
-    									</div>";
-    								}
-    								if ($row["nombre"]!="Otros") {
-    									echo
-    									"<div class='col-md-1'>
-    										<a class='btn btn-danger' href='verCategoria.php?id=".$row["idCategoria"]."' role='button'>Eliminar</a>
-    									</div>";
-    								}
-  								  	echo
-  								  	"</div>
+    										<a class='btn btn-danger' href='confirmarGanador.php?idOferta=".$row["idOferta"]." ' role='button'>Elegir</a>
+    									</div>
+  								  	</div>
 								  </div>";
 						}
 					?>

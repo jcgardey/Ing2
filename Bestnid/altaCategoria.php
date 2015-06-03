@@ -25,7 +25,9 @@
 		}
 	</script>
 	<body>
-		<?php include ("navbarAdmin.html"); ?>
+		<?php 
+			include ("navbarAdmin.html"); 
+		?>
 		<section class="main container-fluid">
 			<div class="row">	
 				<aside class="col-sm-3 col-md-2 sidebar">
@@ -65,10 +67,23 @@
 		        </div>
 		     </div>
 		</section>
-		<footer>
+		<footer class="btn-danger">
 			<div class="container">
-				<div class="col-md-8 col-md-offset-3">
-					<h2>Sistema de Subastas Bestnid</h2>
+				<div class="row">
+					<div class="col-md-8 col-md-offset-3">
+						<h2>Sistema de Subastas Bestnid</h2>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-2 col-md-offset-2">
+						<a href="home.php">Home</a>
+					</div>
+					<div class="col-md-2 col-md-offset-2">
+						<a href="#">Ayuda</a>
+					</div>
+					<div class="col-md-2 col-md-offset-2">
+						<a href="#">Acerca de Bestnid</a>
+					</div>
 				</div>
 			</div>
 		</footer>

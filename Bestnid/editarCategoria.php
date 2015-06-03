@@ -21,7 +21,27 @@
 		}
 	</script>
 	<body>
-		<?php include ("navbarAdmin.html"); ?>
+		<?php 
+			//chequeo de todos los parámetros necesarios
+			if (!isset($_GET["id"]) ) {
+				header("Location:listadoCategorias.php");
+			}
+			include("conexion.php");
+			
+			//chequear que no se la categoria Otros la que se quiere eliminar
+			$result= mysqli_query ($link, "SELECT * FROM Categoria WHERE idCategoria='".$_GET["id"]."' and nombre='Otros' ");
+			
+			
+			//chequear que la categoria exista
+			$result2= mysqli_query ($link, "SELECT * FROM Categoria WHERE idCategoria='".$_GET["id"]."' ");
+			if (mysqli_num_rows($result)>0 || mysqli_num_rows($result2)==0) {
+				header("Location:listadoCategorias.php"); 
+			}
+			
+			$rowCat= mysqli_fetch_array($result2);
+
+			include ("navbarAdmin.html"); 
+		?>
 		<section class="main container-fluid">
 			<div class="row">	
 				<aside class="col-sm-3 col-md-2 sidebar">
@@ -31,7 +51,7 @@
 							include("conexion.php");
 							$result = mysqli_query ($link, "SELECT nombre FROM Categoria");
 							while ($row=mysqli_fetch_array($result) ) {
-								echo "<li><a class='text-danger'href=#>".$row["nombre"]."</a></li>";
+								echo "<li><a class='text-danger' href='listadoProductosPorCategoria.php?nombre=".$row["nombre"]." '>".$row["nombre"]."</a></li>";
 							}
 						?>
 			        </ul>
@@ -40,7 +60,7 @@
 		        	<form name="frm-editarCategoria" id="f_editarCategoria" action="sobreescribirCategoria.php" method="POST">
 						<div class="form-group">
 							<label for="inputNombre">Nombre<span class="text-danger">*</span></label>
-							<input type="text" class="form-control" name="nombreCategoria" id="inputNombre" value=<?php echo $_GET["nombreCategoria"] ?> >
+							<input type="text" class="form-control" name="nombreCategoria" id="inputNombre" value=<?php echo $rowCat["nombre"] ?> >
 							<?php
 								if ( (isset($_GET["error"]) ) && ($_GET["error"]=="si") ) { ?>
 									<p class="text-danger">Existe una categoria con ese nombre</p>
@@ -50,7 +70,7 @@
 						</div>
 						<div class="form-group">
 							<label for="inputDescripcion">Descripcion<span class="text-danger">*</span></label>
-							<textarea class="form-control" name="descripcionCategoria" id="inputDescripcion" rows="5"><?php echo $_GET["descripcion"] ?></textarea>
+							<textarea class="form-control" name="descripcionCategoria" id="inputDescripcion" rows="5"><?php echo $rowCat["descripcion"] ?></textarea>
 							<div id="campoDescripcionCategoria">
 							</div>
 						</div>
@@ -60,10 +80,23 @@
 		        </div>
 		     </div>
 		</section>
-		<footer>
+		<footer class="btn-danger">
 			<div class="container">
-				<div class="col-md-8 col-md-offset-3">
-					<h2>Sistema de Subastas Bestnid</h2>
+				<div class="row">
+					<div class="col-md-8 col-md-offset-3">
+						<h2>Sistema de Subastas Bestnid</h2>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-2 col-md-offset-2">
+						<a href="home.php">Home</a>
+					</div>
+					<div class="col-md-2 col-md-offset-2">
+						<a href="#">Ayuda</a>
+					</div>
+					<div class="col-md-2 col-md-offset-2">
+						<a href="#">Acerca de Bestnid</a>
+					</div>
 				</div>
 			</div>
 		</footer>

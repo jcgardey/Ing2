@@ -16,11 +16,22 @@
 		<script src="Bootstrap/js/jquery-1.11.3.js"></script>
 		<script src="Bootstrap/js/bootstrap.js"></script>
 		<script src="Bootstrap/js/jquery-ui.js"></script>
-		<script src="Bootstrap/js/fechaEspañol.js"></script>
-		<script src="Bootstrap/js/validarProducto.js"></script>
+		<script src="Bootstrap/js/validarOferta.js"></script>
 	</head>
 	<body>
 		<?php 
+			
+			include ("conexion.php");
+			$result = mysqli_query($link,"SELECT * FROM Subasta WHERE idSubasta='".$_GET["idSubasta"]."' and idUsuario='".$_SESSION["idUsuario"]."' ");
+			
+			$result2= mysqli_query($link,"SELECT * FROM Oferta WHERE idSubasta='".$_GET["idSubasta"]."' and idUsuario='".$_SESSION["idUsuario"]."' ");
+			
+			//no se puede realizar una oferta sin pasar el id de la subasta por parámetro 
+			//no se puede realizar una oferta si el ofertante es el mismo que el subastador
+			//no se puede realizar una oferta si el usuario logueado ya ofertó
+			if (mysqli_num_rows($result)>0 || mysqli_num_rows($result2)>0 || !isset($_GET["idSubasta"])) {
+				header ("Location: home.php"); 
+			}
 			if ($_SESSION["admin"]==true) {
 				include ("navbarAdmin.html"); 
 			}
@@ -67,10 +78,23 @@
 				</div>
 			</div>
 		</section>
-		<footer>
+		<footer class="btn-danger">
 			<div class="container">
-				<div class="col-md-8 col-md-offset-3">
-					<h2>Sistema de Subastas Bestnid</h2>
+				<div class="row">
+					<div class="col-md-8 col-md-offset-3">
+						<h2>Sistema de Subastas Bestnid</h2>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-2 col-md-offset-2">
+						<a href="home.php">Home</a>
+					</div>
+					<div class="col-md-2 col-md-offset-2">
+						<a href="#">Ayuda</a>
+					</div>
+					<div class="col-md-2 col-md-offset-2">
+						<a href="#">Acerca de Bestnid</a>
+					</div>
 				</div>
 			</div>
 		</footer>

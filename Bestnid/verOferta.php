@@ -16,6 +16,11 @@
 	</head>
 	<body>
 		<?php 
+			//chequeo de parametros
+			if (!isset($_POST["idSubasta"]) || !isset($_POST["razon"]) || !isset($_POST["monto"])) {
+				header("Location: home.php");
+			}
+			
 			if ($_SESSION["admin"]==true) {
 				include ("navbarAdmin.html"); 
 			}
@@ -23,43 +28,70 @@
 				include ("navbar.html"); 
 			}
 		?>
-		<section class="main container">
-			<div class="row">
-				<div class="col-md-3">
-					<h2>Finaliza tu Oferta</h2>
-				</div>
-				<div class="row well well-lg">
-					<?php
-                    	include ("conexion.php");
-                    	$result = mysqli_query ($link,"SELECT * FROM Subasta INNER JOIN Producto ON  
-                    		Subasta.idProducto = Producto.idProducto WHERE 
-                    		Subasta.idSubasta='".$_POST["idSubasta"]."' ");
-                     	$row= mysqli_fetch_array ($result);
-                    ?>
-					<div class="col-md-6">
-						<h3>Nombre del Producto:</h3>
-						<p class='lead'><?php echo $row["nombre"]; ?></p>
-						<h3>Descripci&oacute;n del Producto:</h3>
-						<p class='lead'><?php echo $row["descripcion"]; ?></p>
-						<h3>Raz&oacute;n:</h3>
-						<p class='lead'><?php echo $_POST["razon"]; ?></p>
-						<h3>Monto:</h3>
-						<p class='lead'>$<?php echo $_POST["monto"]; ?></p>
-						<a class="btn btn-lg btn-danger" href="<?php echo "altaOfertaBD.php?monto=".$_POST["monto"]."
-						&razon=".$_POST["razon"]."
-						&idSubasta=".$_POST["idSubasta"]." "; ?>" >Finalizar</a>
-						<a class="btn btn-lg btn-default" href=<?php echo "altaOferta.php?idSubasta=".$_POST["idSubasta"]." ";?> >Reiniciar</a>
-					</div>
-					<div class="col-md-3">
-						<img src=<?php echo $row["imagen"]; ?> style=" max width:300px; max height:200px;" class="img-responsive" alt="imagen" />
+		<section class="main container-fluid">
+			<div class="main row">
+				<div class="col-sm-3 col-md-2 sidebar">
+		        	<ul class="nav nav-sidebar"> 	
+			            <li class="active"><a class="text-danger" href="#"><strong>Categorias</strong></a></li>
+			            <?php			          
+							include("conexion.php");
+							$result = mysqli_query ($link, "SELECT nombre FROM Categoria");
+							while ($row=mysqli_fetch_array($result) ) {
+								echo "<li><a class='text-danger' href='listadoProductosPorCategoria.php?nombre=".$row["nombre"]." '>".$row["nombre"]."</a></li>";
+							}
+						?>
+			        </ul>
+		        </div>
+				<div class="col-md-9">
+					<div class="row well well-lg">
+						<?php
+	                    	include ("conexion.php");
+	                    	$result = mysqli_query ($link,"SELECT * FROM Subasta INNER JOIN Producto ON  
+	                    		Subasta.idProducto = Producto.idProducto WHERE 
+	                    		Subasta.idSubasta='".$_POST["idSubasta"]."' ");
+	                     	$row= mysqli_fetch_array ($result);
+	                    ?>
+	                    <div class="col-md-3">
+							<h2>Finaliza tu Oferta</h2>
+						</div>
+						<div class="col-md-6">
+							<h3>Nombre del Producto:</h3>
+							<p class='lead'><?php echo $row["nombre"]; ?></p>
+							<h3>Descripci&oacute;n del Producto:</h3>
+							<p class='lead text-justify'><?php echo $row["descripcion"]; ?></p>
+							<h3>Raz&oacute;n:</h3>
+							<p class='lead text-justify'><?php echo $_POST["razon"]; ?></p>
+							<h3>Monto:</h3>
+							<p class='lead'>$<?php echo $_POST["monto"]; ?></p>
+							<a class="btn btn-lg btn-danger" href="<?php echo "altaOfertaBD.php?monto=".$_POST["monto"]."
+							&razon=".$_POST["razon"]."
+							&idSubasta=".$_POST["idSubasta"]." "; ?>" >Finalizar</a>
+							<a class="btn btn-lg btn-default" href=<?php echo "altaOferta.php?idSubasta=".$_POST["idSubasta"]." ";?> >Reiniciar</a>
+						</div>
+						<div class="col-md-3">
+							<img src='<?php echo $row["imagen"]; ?>' style=" max width:300px; max height:200px;" class="img-responsive" alt="imagen" />
+						</div>
 					</div>
 				</div>
 			</div>
 		</section>
-		<footer>
+		<footer class="btn-danger">
 			<div class="container">
-				<div class="col-md-8 col-md-offset-3">
-					<h2>Sistema de Subastas Bestnid</h2>
+				<div class="row">
+					<div class="col-md-8 col-md-offset-3">
+						<h2>Sistema de Subastas Bestnid</h2>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-2 col-md-offset-2">
+						<a href="home.php">Home</a>
+					</div>
+					<div class="col-md-2 col-md-offset-2">
+						<a href="#">Ayuda</a>
+					</div>
+					<div class="col-md-2 col-md-offset-2">
+						<a href="#">Acerca de Bestnid</a>
+					</div>
 				</div>
 			</div>
 		</footer>
