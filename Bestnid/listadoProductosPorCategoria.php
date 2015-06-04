@@ -33,12 +33,12 @@
 			<aside class="row">	
 				<div class="col-sm-3 col-md-2 sidebar">
 		        	<ul class="nav nav-sidebar"> 	
-			            <li class="active"><a class="text-danger" href="#"><strong>Categorias</strong></a></li>
+			            <li class="active"><a class="text-danger" href="home.php"><strong>Categorias</strong></a></li>
 			            <?php			          
 							include("conexion.php");
-							$result = mysqli_query ($link, "SELECT nombre FROM Categoria");
+							$result = mysqli_query ($link, "SELECT * FROM Categoria");
 							while ($row=mysqli_fetch_array($result) ) {
-								echo "<li><a class='text-danger' href='listadoProductosPorCategoria.php?nombre=".$row["nombre"]." '>".$row["nombre"]."</a></li>";
+								echo "<li><a class='text-danger' href='listadoProductosPorCategoria.php?idCategoria=".$row["idCategoria"]." '>".$row["nombre"]."</a></li>";
 							}
 						?>
 			        </ul>
@@ -47,7 +47,7 @@
 		        	<?php			          
 						include("conexion.php");
 						//obtener la descripción de la categoria que se pasó por parámetro
-						$result = mysqli_query ($link, "SELECT * FROM Categoria WHERE nombre='".$_GET["nombre"]."' ");
+						$result = mysqli_query ($link, "SELECT * FROM Categoria WHERE idCategoria='".$_GET["idCategoria"]."' ");
 						$rowCat = mysqli_fetch_array($result);
 
 						
@@ -61,7 +61,12 @@
 						$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.estado,Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion 
 							FROM Subasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto
 							WHERE Producto.idCategoria='".$rowCat["idCategoria"]."' and (Subasta.estado='activa'  or Subasta.estado='finalizada') 
-							ORDER BY Subasta.estado, Subasta.fecha_realizacion ");
+							ORDER BY Subasta.fecha_cierre, Subasta.estado ");
+
+						//en caso que no haya productos de esa categoria
+						if (mysqli_num_rows($result)==0) {
+							echo "<h3 class='text-danger'>Por el momento no hay productos de esta Categoria</h3>";
+						}
 
 						while ($row=mysqli_fetch_array($result) ) {
 							if (isset($_SESSION["idUsuario"])) {
@@ -91,15 +96,15 @@
     										<a class='btn btn-danger' href='verSubasta.php?idSubasta=".$row["idSubasta"]."'>Ver Producto</a>
     										<br />
     									";
-    								if ($row["estado"]=="activa" && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows==0 ) {
+    								if ($row["estado"]=="activa" && isset($_SESSION["autentificado"]) && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows==0 ) {
     									echo "
     										<a class='btn btn-danger' href='altaOferta.php?idSubasta=".$row["idSubasta"]."'>Ofertar</a>
     										 ";
-    								} elseif ($row["estado"]=="activa" && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows>0) {
+    								} elseif ($row["estado"]=="activa" && isset($_SESSION["autentificado"]) && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows>0) {
     									echo "
     										 <a class='btn btn-danger' href='#'=".$row["idSubasta"]."'>Editar Oferta</a>
     										 ";
-    								} elseif ($row["estado"]=="finalizada" && $row["idUsuario"]==$_SESSION["idUsuario"]) {
+    								} elseif ($row["estado"]=="finalizada" && isset($_SESSION["autentificado"]) && $row["idUsuario"]==$_SESSION["idUsuario"]) {
     									echo "
     										 <a class='btn btn-danger' href='elegirGanador.php?idSubasta=".$row["idSubasta"]."'>Elegir Ganador</a>
     									     ";
@@ -117,19 +122,18 @@
 		<footer class="btn-danger">
 			<div class="container">
 				<div class="row">
-					<div class="col-md-8 col-md-offset-3">
-						<h2>Sistema de Subastas Bestnid</h2>
-					</div>
+					<h4 class="text-center">Sistema de Subastas Bestnid</h4>
 				</div>
 				<div class="row">
-					<div class="col-md-2 col-md-offset-2">
-						<a href="home.php">Home</a>
+					<div class="col-md-6">
+						<p>Luca Cucchetti - Juan Cruz Gardey - Brian C&eacute;spedes </p>
 					</div>
-					<div class="col-md-2 col-md-offset-2">
-						<a href="#">Ayuda</a>
-					</div>
-					<div class="col-md-2 col-md-offset-2">
-						<a href="#">Acerca de Bestnid</a>
+					<div class="col-md-6">
+						<ul class="list-inline text-right">
+							<li><a href="home.php">Home</a></li>
+							<li><a href="#">Ayuda</a></li>
+							<li><a href="#">Acerca de Bestnid</a></li>
+						</ul>
 					</div>
 				</div>
 			</div>

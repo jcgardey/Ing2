@@ -1,5 +1,5 @@
-<?php include("session.php"); ?>
-<DOCTYPE html>
+<?php session_start(); ?>
+<!DOCTYPE html>
 <html lang="es">
 	<head>
 		<meta charset="utf-8">
@@ -16,19 +16,17 @@
 	</head>
 	<body>
 		<?php 
-			if (!isset($_GET["nombre"]) || !isset($_GET["cate"]) || !isset($_GET["desc"]) || !isset($_GET["fecha"]) ) {
-				header("Location:home.php");
-			}
-			
-			if ($_SESSION["admin"]==true) {
+			if (isset($_SESSION["admin"]) && $_SESSION["admin"]==true) {
 				include ("navbarAdmin.html"); 
 			}
-			else {
+			elseif (isset($_SESSION["admin"]) && $_SESSION["admin"]==false) {
 				include ("navbar.html"); 
+			} else {
+				include ("navbarIndex.html");
 			}
 		?>
 		<section class="main container-fluid">
-			<div class="main row">
+			<div class="main row">	
 				<div class="col-sm-3 col-md-2 sidebar">
 		        	<ul class="nav nav-sidebar"> 	
 			            <li class="active"><a class="text-danger" href="home.php"><strong>Categorias</strong></a></li>
@@ -41,29 +39,18 @@
 						?>
 			        </ul>
 		        </div>
-				<div class="col-md-9">
-					<div class="row well well-lg">
-						<div class="col-md-3">
-							<h2>Finaliza tu Producto</h2>
-						</div>
-						<div class="col-md-6">
-							<h1><?php echo $_GET["nombre"]; ?></h1>
-							<h3>Descripci&oacute;n:</h3>
-							<p class='lead text-justify'><?php echo $_GET["desc"]; ?></p>
-							<h3>Categor&iacute;a:</h3>
-							<p class='lead'><?php echo $_GET["cate"]; ?></p>
-							<h3>Fecha de Cierre:</h3>
-							<p class='lead'><?php echo $_GET["fecha"]; ?></p>
+		        <div class="col-sm-3 col-md-9">
+		        	<h3><strong>Acerca de Bestnid</strong></h3>	
+		        	<p class="text-danger text-justify">
+			        	Bestnid es considerado un remate, pero un tanto particular. En Bestnid el bien subastado no se adjudica al 
+						postor que más dinero haya ofrecido por él, sino que cada postor comunica por qué necesita dicho 
+						producto, y el subastador elegirá un ganador en función de las necesidades expresadas por los ofertantes.
+						Los ofertantes igualmente ofrecerán dinero pero el subastador no podrá verlo. Solo podrá ver el monto ofrecido
+						por el ganador de la subasta una vez que lo elija.
+		        	</p>
+		        </div>
 
-							<a class="btn btn-lg btn-danger" href="<?php echo "subprodBD.php?nombre=".$_GET["nombre"]."&fecha=".$_GET["fecha"]."&imagen=".$_GET["imagen"]."&desc=".$_GET["desc"]."&cate=".$_GET["cate"];?>">Finalizar</a>
-							<a class="btn btn-lg btn-default" href="altaProducto.php">Reiniciar</a>
-						</div>
-						<div class="col-md-3">
-							<img src='<?php echo $_GET["imagen"]; ?>' class="img-responsive" alt="imagen" />
-						</div>
-					</div>
-				</div>
-			</div>
+		     </div>
 		</section>
 		<footer class="btn-danger">
 			<div class="container">
@@ -77,7 +64,7 @@
 					<div class="col-md-6">
 						<ul class="list-inline text-right">
 							<li><a href="home.php">Home</a></li>
-							<li><a href="#">Ayuda</a></li>
+							<li><a href="acercaBestnid.php">Ayuda</a></li>
 							<li><a href="#">Acerca de Bestnid</a></li>
 						</ul>
 					</div>

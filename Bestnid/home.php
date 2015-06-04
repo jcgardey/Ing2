@@ -27,12 +27,12 @@
 			<div class="main row">	
 				<div class="col-sm-3 col-md-2 sidebar">
 		        	<ul class="nav nav-sidebar"> 	
-			            <li class="active"><a class="text-danger" href="#"><strong>Categorias</strong></a></li>
+			            <li class="active"><a class="text-danger" href="home.php"><strong>Categorias</strong></a></li>
 			            <?php			          
 							include("conexion.php");
-							$result = mysqli_query ($link, "SELECT nombre FROM Categoria");
+							$result = mysqli_query ($link, "SELECT * FROM Categoria");
 							while ($row=mysqli_fetch_array($result) ) {
-								echo "<li><a class='text-danger' href='listadoProductosPorCategoria.php?nombre=".$row["nombre"]." '>".$row["nombre"]."</a></li>";
+								echo "<li><a class='text-danger' href='listadoProductosPorCategoria.php?idCategoria=".$row["idCategoria"]." '>".$row["nombre"]."</a></li>";
 							}
 						?>
 			        </ul>
@@ -51,7 +51,7 @@
 
 						$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.estado,Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion, Categoria.nombre AS nomCat 
 							FROM Subasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto 
-							INNER JOIN Categoria ON Producto.idCategoria=Categoria.idCategoria ORDER BY Subasta.estado, Subasta.fecha_realizacion");
+							INNER JOIN Categoria ON Producto.idCategoria=Categoria.idCategoria ORDER BY Subasta.fecha_realizacion DESC, Subasta.estado");
 						
 						while ($row=mysqli_fetch_array($result) ) {
 							$resultOf=mysqli_query ($link, "SELECT * FROM Oferta WHERE idSubasta='".$row["idSubasta"]."' and idUsuario='".$_SESSION["idUsuario"]."' ");
@@ -79,20 +79,27 @@
     										<p>".$row["descripcion"]."</p>
     									</div>
     									<div class='col-md-2'>
+    										<div class='row'>
     										<a class='btn btn-danger' href='verSubasta.php?idSubasta=".$row["idSubasta"]."'>Ver Producto</a>
-    										<br />
+    										</div>
     									";
     								if ($row["estado"]=="activa" && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows==0 ) {
     									echo "
+    										<div class='row'>
     										<a class='btn btn-danger' href='altaOferta.php?idSubasta=".$row["idSubasta"]."'>Ofertar</a>
+    										</div>
     										 ";
     								} elseif ($row["estado"]=="activa" && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows>0) {
     									echo "
+    										 <div class='row'>
     										 <a class='btn btn-danger' href='#'=".$row["idSubasta"]."'>Editar Oferta</a>
+    										 </div>
     										 ";
     								} elseif ($row["estado"]=="finalizada" && $row["idUsuario"]==$_SESSION["idUsuario"]) {
     									echo "
+    										 <div class='row'>
     										 <a class='btn btn-danger' href='elegirGanador.php?idSubasta=".$row["idSubasta"]."'>Elegir Ganador</a>
+    									     </div>
     									     ";
     								}
     								echo "
@@ -108,19 +115,18 @@
 		<footer class="btn-danger">
 			<div class="container">
 				<div class="row">
-					<div class="col-md-8 col-md-offset-3">
-						<h2>Sistema de Subastas Bestnid</h2>
-					</div>
+					<h4 class="text-center">Sistema de Subastas Bestnid</h4>
 				</div>
 				<div class="row">
-					<div class="col-md-2 col-md-offset-2">
-						<a href="home.php">Home</a>
+					<div class="col-md-6">
+						<p>Luca Cucchetti - Juan Cruz Gardey - Brian C&eacute;spedes </p>
 					</div>
-					<div class="col-md-2 col-md-offset-2">
-						<a href="#">Ayuda</a>
-					</div>
-					<div class="col-md-2 col-md-offset-2">
-						<a href="#">Acerca de Bestnid</a>
+					<div class="col-md-6">
+						<ul class="list-inline text-right">
+							<li><a href="home.php">Home</a></li>
+							<li><a href="#">Ayuda</a></li>
+							<li><a href="acercaBestnid.php">Acerca de Bestnid</a></li>
+						</ul>
 					</div>
 				</div>
 			</div>

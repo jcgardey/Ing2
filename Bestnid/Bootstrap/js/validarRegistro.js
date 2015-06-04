@@ -12,6 +12,20 @@ function validarCampo (expReg, idCampo, idCampoError, mensajeError) {
 	return true;
 }
 
+function validarCampoDosExp (expReg, expReg2, idCampo, idCampoError, mensajeError) {
+	if (!document.getElementById(idCampo).value) {
+		document.getElementById(idCampoError).innerHTML = "<p class='text-danger'>Complete este campo</p>";
+		document.getElementById(idCampo).focus();
+		return false;
+	}
+	if (!expReg.exec(document.getElementById(idCampo).value) && !expReg2.exec(document.getElementById(idCampo).value) ) {
+		document.getElementById(idCampoError).innerHTML = "<p class='text-danger'>" + mensajeError + "</p>";
+		document.getElementById(idCampo).focus();
+		return false;
+	}
+	return true;
+}
+
 function validarCampoObligatorio (idCampo, idCampoError) {
 	if (!document.getElementById(idCampo).value) {
 		document.getElementById(idCampoError).innerHTML = "<p class='text-danger'>Complete este campo</p>";
@@ -23,26 +37,28 @@ function validarCampoObligatorio (idCampo, idCampoError) {
 
 function validarDomicilio () {
 	var expRegNumero=/^\d+$/;
-	var expRegDepto=/^[a-zA-Z]{1}$/;
 	var expRegCalle=/^[a-zA-ZÑñÁáÉéÍíÓóÚúÜü\s]+$/;
-	if (!expRegCalle.exec(document.getElementById("inputCalle").value) && !expRegNumero.exec(document.getElementById("inputCalle").value) ) {
-		document.getElementById("campoDomicilio").innerHTML = "<p class=text-danger>Se aceptan solo letras o solo números</p>";
-		document.getElementById("inputCalle").focus();
+	if (!validarCampoDosExp(expRegNumero,expRegCalle,"inputCalle","campoDomicilio","se aceptan letras o números")) {
 		return false;
 	}
-	if (!validarCampo(expRegNumero,"inputNumero","campoDomicilio","Solo se aceptan números")) {
+	if (!validarCampoObligatorio("inputNumero","campoDomicilio")) {
 		return false;
 	}
 	if (document.getElementById("inputPiso").value || document.getElementById("inputDepto").value) {
-		if (!validarCampo(expRegNumero,"inputPiso","campoDomicilio","Solo se aceptan números, es obligatorio en conjunto con Depto")) {
-			return false;
-		}
-		if (!validarCampo(expRegDepto,"inputDepto","campoDomicilio","Solo se acepta una letra, es obligatorio en conjunto con Piso")) {
-			return false;
+		if (document.getElementById("inputPiso").value && validarCampo(expRegNumero,"inputPiso","campoDomicilio","Solo se aceptan números, es obligatorio en conjunto con Depto")) {
+			if (!validarCampoDosExp(expRegNumero,expRegCalle,"inputDepto","campoDomicilio","se aceptan letras o números")) {
+				return false;
+			}
+		} 
+		else {
+			if (!validarCampoDosExp(expRegNumero,expRegCalle,"inputDepto","campoDomicilio","se aceptan letras o números") || document.getElementById("inputPiso").value) {
+				return false;
+			}
 		}
 	}
 	return true;
 }
+
 
 function validarPassword () {
 	var expRegPass = /(^(?=.*[a-z])(?=.*[A-Z])(?=.*\d){6,20}.+$)/;

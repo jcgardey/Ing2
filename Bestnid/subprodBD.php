@@ -2,6 +2,9 @@
 	include("session.php"); //hay que tener una sesion iniciada
 	include("conexion.php");
 
+	if (!isset($_GET["desc"]) || !isset($_GET["nombre"]) || !isset($_GET["cate"]) || !isset($_GET["imagen"])) {
+		header("Location: home.php");
+	}
 	$estado="activa";
 	
 	$result = mysqli_query ($link, "SELECT idCategoria FROM Categoria WHERE nombre='".$_GET["cate"]."' ");

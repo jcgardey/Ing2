@@ -34,12 +34,12 @@
 			<div class="main row">
 				<div class="col-sm-3 col-md-2 sidebar">
 		        	<ul class="nav nav-sidebar"> 	
-			            <li class="active"><a class="text-danger" href="#"><strong>Categorias</strong></a></li>
+			            <li class="active"><a class="text-danger" href="home.php"><strong>Categorias</strong></a></li>
 			            <?php			          
 							include("conexion.php");
-							$result = mysqli_query ($link, "SELECT nombre FROM Categoria");
+							$result = mysqli_query ($link, "SELECT * FROM Categoria");
 							while ($row=mysqli_fetch_array($result) ) {
-								echo "<li><a class='text-danger' href='listadoProductosPorCategoria.php?nombre=".$row["nombre"]." '>".$row["nombre"]."</a></li>";
+								echo "<li><a class='text-danger' href='listadoProductosPorCategoria.php?idCategoria=".$row["idCategoria"]." '>".$row["nombre"]."</a></li>";
 							}
 						?>
 			        </ul>
@@ -90,11 +90,11 @@
 						</div>
 						<div class="row">
 							<h4><strong>Nombre del producto: </strong></h4>
-							<?php echo "<p class='lead text-justify'>".$row["nombre"]."</p>"; ?>
+							<?php echo "<p class='lead'>".$row["nombre"]."</p>"; ?>
 						</div>
 						<div class="row">	
 							<h4><strong>Descripci&oacute;n: </strong></h4>
-							<?php echo "<p class='lead text-justify'>".$row["descripcion"]."</p>"; ?>
+							<?php echo "<p class='lead'>".$row["descripcion"]."</p>"; ?>
 						</div>
 						<div class="row">	
 							<h4><strong>Categor&iacute;a: </strong></h4>
@@ -147,32 +147,35 @@
 								}
 							}
 
-							//chequear si la subasta tiene alguna oferta
-							$result=mysqli_query($link,"SELECT * FROM Oferta WHERE idSubasta='".$_GET["idSubasta"]."' ");
-							if (mysqli_num_rows($result)>0) {
-								echo "<h3><strong>Ofertas realizadas</strong></h3>";
-							}
-							else {
-								echo "<h3><strong>Por el momento no hay ofertas realizadas</strong></h3>";
-							}
-							
-							$result= mysqli_query ($link, "SELECT * FROM Oferta INNER JOIN Usuario ON Oferta.idUsuario=Usuario.idUsuario 
-								WHERE Oferta.idSubasta='".$_GET["idSubasta"]."' ");
-							while ($row=mysqli_fetch_array($result) ) {
-								echo "<div class='panel panel-default row'>
-	  									<div class='panel-body container-fluid'>
-	  										<div class='row'>
-	  											<div class='col-md-10'>
-	  												<a class='lead' href=#>".$row["nombre_usuario"]."</a>
-	  											</div>
-	  										</div>
-	  										<div class='row'>
-	  											<div class='col-md-10'>
-	  												<p class='lead'>".$row["razon"]."</p>
-	  											</div>
-	  										</div>
-	  								  	</div>
-									  </div>";
+							//se muestran las ofertas realizadas solo si el usuario logueado es el subastador o si no se pueden realizar mas ofertas en ella
+							if ( (isset($_SESSION["idUsuario"]) && $row["idUsuario"]==$_SESSION["idUsuario"]) || $row["estado"]!='activa') {
+								//chequear si la subasta tiene alguna oferta
+								$result=mysqli_query($link,"SELECT * FROM Oferta WHERE idSubasta='".$_GET["idSubasta"]."' ");
+								if (mysqli_num_rows($result)>0) {
+									echo "<h3><strong>Ofertas realizadas</strong></h3>";
+								}
+								else {
+									echo "<h3><strong>No hay ofertas realizadas</strong></h3>";
+								}
+								
+								$result= mysqli_query ($link, "SELECT * FROM Oferta INNER JOIN Usuario ON Oferta.idUsuario=Usuario.idUsuario 
+									WHERE Oferta.idSubasta='".$_GET["idSubasta"]."' ");
+								while ($row=mysqli_fetch_array($result) ) {
+									echo "<div class='panel panel-default row'>
+		  									<div class='panel-body container-fluid'>
+		  										<div class='row'>
+		  											<div class='col-md-10'>
+		  												<a class='lead' href=#>".$row["nombre_usuario"]."</a>
+		  											</div>
+		  										</div>
+		  										<div class='row'>
+		  											<div class='col-md-10'>
+		  												<p class='lead'>".$row["razon"]."</p>
+		  											</div>
+		  										</div>
+		  								  	</div>
+										  </div>";
+								}
 							}
 						?>
 					</div>
@@ -182,19 +185,18 @@
 		<footer class="btn-danger">
 			<div class="container">
 				<div class="row">
-					<div class="col-md-8 col-md-offset-3">
-						<h2>Sistema de Subastas Bestnid</h2>
-					</div>
+					<h4 class="text-center">Sistema de Subastas Bestnid</h4>
 				</div>
 				<div class="row">
-					<div class="col-md-2 col-md-offset-2">
-						<a href="home.php">Home</a>
+					<div class="col-md-6">
+						<p>Luca Cucchetti - Juan Cruz Gardey - Brian C&eacute;spedes </p>
 					</div>
-					<div class="col-md-2 col-md-offset-2">
-						<a href="#">Ayuda</a>
-					</div>
-					<div class="col-md-2 col-md-offset-2">
-						<a href="#">Acerca de Bestnid</a>
+					<div class="col-md-6">
+						<ul class="list-inline text-right">
+							<li><a href="home.php">Home</a></li>
+							<li><a href="#">Ayuda</a></li>
+							<li><a href="#">Acerca de Bestnid</a></li>
+						</ul>
 					</div>
 				</div>
 			</div>

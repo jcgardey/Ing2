@@ -44,18 +44,18 @@
 		?>
 		<section class="main container-fluid">
 			<div class="row">	
-				<aside class="col-sm-3 col-md-2 sidebar">
+				<div class="col-sm-3 col-md-2 sidebar">
 		        	<ul class="nav nav-sidebar"> 	
-			             <li class="active"><a class="text-danger" href="#"><strong>Categorias</strong></a></li>
+			            <li class="active"><a class="text-danger" href="home.php"><strong>Categorias</strong></a></li>
 			            <?php			          
 							include("conexion.php");
-							$result = mysqli_query ($link, "SELECT nombre FROM Categoria");
+							$result = mysqli_query ($link, "SELECT * FROM Categoria");
 							while ($row=mysqli_fetch_array($result) ) {
-								echo "<li><a class='text-danger' href='listadoProductosPorCategoria.php?nombre=".$row["nombre"]." '>".$row["nombre"]."</a></li>";
+								echo "<li><a class='text-danger' href='listadoProductosPorCategoria.php?idCategoria=".$row["idCategoria"]." '>".$row["nombre"]."</a></li>";
 							}
 						?>
 			        </ul>
-		        </aside>
+		        </div>
 		        <div class="col-md-10">
 		        	<form name="frm-editarCategoria" id="f_editarCategoria" action="sobreescribirCategoria.php" method="POST">
 						<div class="form-group">
@@ -83,19 +83,18 @@
 		<footer class="btn-danger">
 			<div class="container">
 				<div class="row">
-					<div class="col-md-8 col-md-offset-3">
-						<h2>Sistema de Subastas Bestnid</h2>
-					</div>
+					<h4 class="text-center">Sistema de Subastas Bestnid</h4>
 				</div>
 				<div class="row">
-					<div class="col-md-2 col-md-offset-2">
-						<a href="home.php">Home</a>
+					<div class="col-md-6">
+						<p>Luca Cucchetti - Juan Cruz Gardey - Brian C&eacute;spedes </p>
 					</div>
-					<div class="col-md-2 col-md-offset-2">
-						<a href="#">Ayuda</a>
-					</div>
-					<div class="col-md-2 col-md-offset-2">
-						<a href="#">Acerca de Bestnid</a>
+					<div class="col-md-6">
+						<ul class="list-inline text-right">
+							<li><a href="home.php">Home</a></li>
+							<li><a href="#">Ayuda</a></li>
+							<li><a href="#">Acerca de Bestnid</a></li>
+						</ul>
 					</div>
 				</div>
 			</div>
