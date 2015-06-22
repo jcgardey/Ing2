@@ -51,11 +51,13 @@
 
 						$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.estado,Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion, Categoria.nombre AS nomCat 
 							FROM Subasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto 
-							INNER JOIN Categoria ON Producto.idCategoria=Categoria.idCategoria ORDER BY Subasta.fecha_realizacion DESC, Subasta.estado");
+							INNER JOIN Categoria ON Producto.idCategoria=Categoria.idCategoria ORDER BY  Subasta.estado, Subasta.fecha_cierre DESC");
 						
 						while ($row=mysqli_fetch_array($result) ) {
 							$resultOf=mysqli_query ($link, "SELECT * FROM Oferta WHERE idSubasta='".$row["idSubasta"]."' and idUsuario='".$_SESSION["idUsuario"]."' ");
 							$numRows = mysqli_num_rows ($resultOf);
+							$ofertaDeUsuario=mysqli_fetch_array($resultOf);
+							
 							echo "<div class='panel panel-default row'>
   									<div class='panel-body container-fluid'>
   										<div class='col-md-2'>
@@ -92,7 +94,10 @@
     								} elseif ($row["estado"]=="activa" && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows>0) {
     									echo "
     										 <div class='row'>
-    										 <a class='btn btn-danger' href='#'=".$row["idSubasta"]."'>Editar Oferta</a>
+    										 	<a class='btn btn-danger' href='editarOferta.php?idOferta=".$ofertaDeUsuario["idOferta"]."'>Editar Oferta</a>
+    										 </div>
+    										 <div class='row'>
+    										 	<a class='btn btn-danger' href='verOfertaCancelar.php?idOferta=".$ofertaDeUsuario["idOferta"]."'>Cancelar Oferta</a>
     										 </div>
     										 ";
     								} elseif ($row["estado"]=="finalizada" && $row["idUsuario"]==$_SESSION["idUsuario"]) {

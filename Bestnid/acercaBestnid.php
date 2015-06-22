@@ -64,8 +64,8 @@
 					<div class="col-md-6">
 						<ul class="list-inline text-right">
 							<li><a href="home.php">Home</a></li>
-							<li><a href="acercaBestnid.php">Ayuda</a></li>
-							<li><a href="#">Acerca de Bestnid</a></li>
+							<li><a href="#">Ayuda</a></li>
+							<li><a href="acercaBestnid.php">Acerca de Bestnid</a></li>
 						</ul>
 					</div>
 				</div>

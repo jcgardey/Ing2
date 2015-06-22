@@ -46,7 +46,7 @@
 
 						$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre, Subasta.estado, Producto.imagen, Producto.nombre, Producto.descripcion, Categoria.nombre AS nomCat 
 							FROM Subasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto 
-							INNER JOIN Categoria ON Producto.idCategoria=Categoria.idCategoria ORDER BY Subasta.fecha_realizacion DESC, Subasta.estado");
+							INNER JOIN Categoria ON Producto.idCategoria=Categoria.idCategoria ORDER BY  Subasta.estado, Subasta.fecha_cierre DESC");
 						
 						while ($row=mysqli_fetch_array($result) ) {
 							echo "<div class='panel panel-default row'>

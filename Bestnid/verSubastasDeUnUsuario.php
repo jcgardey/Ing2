@@ -1,4 +1,6 @@
-
+<?php 
+	include("session.php"); 
+?>
 <!DOCTYPE html>
 <html lang="es">
 	<head>
@@ -16,21 +18,15 @@
 	</head>
 	<body>
 		<?php 
-			session_start();
-			if (isset($_SESSION["autentificado"]) && $_SESSION["autentificado"]) {
-				if ($_SESSION["admin"]) {
-					include ("navbarAdmin.html");
-				}
-				else {
-					include ("navbar.html");
-				}
+			if ($_SESSION["admin"]==true) {
+				include ("navbarAdmin.html"); 
 			}
 			else {
-				include ("navbarIndex.html");
+				include ("navbar.html"); 
 			}
 		?>
 		<section class="main container-fluid">
-			<aside class="row">	
+			<div class="main row">	
 				<div class="col-sm-3 col-md-2 sidebar">
 		        	<ul class="nav nav-sidebar"> 	
 			            <li class="active"><a class="text-danger" href="home.php"><strong>Categorias</strong></a></li>
@@ -46,34 +42,28 @@
 		        <div class="col-sm-3 col-md-9">
 		        	<?php			          
 						include("conexion.php");
-						//obtener la descripción de la categoria que se pasó por parámetro
-						$result = mysqli_query ($link, "SELECT * FROM Categoria WHERE idCategoria='".$_GET["idCategoria"]."' ");
-						$rowCat = mysqli_fetch_array($result);
-
 						
 						//finalizar aquellas subastas para las que se alcanzo su fecha de fin
 						$result= mysqli_query ($link,"UPDATE Subasta SET estado='finalizada' WHERE estado='activa' and fecha_cierre<=current_date()");
-
+						
 						//cancelar subastas que finalizaron sin ofertas
 						$result= mysqli_query ($link,"UPDATE Subasta SET estado ='cerrada' WHERE estado='finalizada' and NOT EXISTS (SELECT * FROM Oferta WHERE Oferta.idSubasta=Subasta.idSubasta)");
 
 
-						$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.estado,Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion 
-							FROM Subasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto
-							WHERE Producto.idCategoria='".$_GET["idCategoria"]."'
-							ORDER BY Subasta.estado, Subasta.fecha_cierre DESC ");
+						$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.estado,Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion, Categoria.nombre AS nomCat 
+							FROM Subasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto 
+							INNER JOIN Categoria ON Producto.idCategoria=Categoria.idCategoria 
+							WHERE Subasta.idUsuario='".$_SESSION["idUsuario"]."'
+							ORDER BY  Subasta.estado, Subasta.fecha_cierre DESC");
 
-						//en caso que no haya productos de esa categoria
+						//en caso que el usuario no posea subastas realizdas
 						if (mysqli_num_rows($result)==0) {
-							echo "<h3 class='text-danger'>Por el momento no hay productos de esta Categoria</h3>";
+							echo "<h3 class='text-danger'>No ha realizado ninguna subasta</h3>";
 						}
-
+						
 						while ($row=mysqli_fetch_array($result) ) {
-							if (isset($_SESSION["idUsuario"])) {
-								$resultOf=mysqli_query ($link, "SELECT * FROM Oferta WHERE idSubasta='".$row["idSubasta"]."' and idUsuario='".$_SESSION["idUsuario"]."' ");
-								$numRows = mysqli_num_rows ($resultOf);
-								$ofertaDeUsuario=mysqli_fetch_array($resultOf);
-							}
+							$resultOfertas=mysqli_query ($link, "SELECT * FROM Oferta WHERE idSubasta='".$row["idSubasta"]."' ");
+							$cantidadOfertas = mysqli_num_rows ($resultOfertas);
 							echo "<div class='panel panel-default row'>
   									<div class='panel-body container-fluid'>
   										<div class='col-md-2'>
@@ -87,6 +77,9 @@
     											<h5><strong>Finaliza: </strong>".date('d-m-Y',strtotime($row["fecha_cierre"]))."</h5>
     										</div>
     										<div class='row'>
+    											<h5><strong>Categoría: </strong>".$row["nomCat"]."</h5>
+    										</div>
+    										<div class='row'>
     											<h5><strong>Estado: </strong>".$row["estado"]."</h5>
     										</div>
     									</div>
@@ -95,27 +88,17 @@
     									</div>
     									<div class='col-md-2'>
     										<div class='row'>
-    											<a class='btn btn-danger' href='verSubasta.php?idSubasta=".$row["idSubasta"]."'>Ver Producto</a>
+	    										<a class='btn btn-danger' href='verSubasta.php?idSubasta=".$row["idSubasta"]."'>Ver Producto
+	    										<span class='badge'>".$cantidadOfertas."</span>
+	    										</a>
     										</div>
     									";
-    								if ($row["estado"]=="activa" && isset($_SESSION["autentificado"]) && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows==0 ) {
-    									echo "
-    										<div class='row'>
-    											<a class='btn btn-danger' href='altaOferta.php?idSubasta=".$row["idSubasta"]."'>Ofertar</a>
-    										</div>
-    										 ";
-    								} elseif ($row["estado"]=="activa" && isset($_SESSION["autentificado"]) && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows>0) {
+    								if ($row["estado"]=="finalizada" && $row["idUsuario"]==$_SESSION["idUsuario"]) {
     									echo "
     										 <div class='row'>
-    										 	<a class='btn btn-danger' href='editarOferta.php?idOferta=".$ofertaDeUsuario["idOferta"]."'>Editar Oferta</a>
-    										 </div>
-    										 <div class='row'>
-    										 	<a class='btn btn-danger' href='verOfertaCancelar.php?idOferta=".$ofertaDeUsuario["idOferta"]."'>Cancelar Oferta</a>
-    										  </div>
-    										 ";
-    								} elseif ($row["estado"]=="finalizada" && isset($_SESSION["autentificado"]) && $row["idUsuario"]==$_SESSION["idUsuario"]) {
-    									echo "
-    										 <a class='btn btn-danger' href='elegirGanador.php?idSubasta=".$row["idSubasta"]."'>Elegir Ganador</a>
+    										 <a class='btn btn-danger' href='elegirGanador.php?idSubasta=".$row["idSubasta"]."'>Elegir Ganador
+    										 </a>
+    									     </div>
     									     ";
     								}
     								echo "
@@ -126,7 +109,7 @@
 					?>
 		        </div>
 
-		     </aside>
+		     </div>
 		</section>
 		<footer class="btn-danger">
 			<div class="container">

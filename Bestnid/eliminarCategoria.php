@@ -2,7 +2,7 @@
 	include("sessionAdmin.php"); 
 	include("conexion.php");
 	
-	//cheque de parámetro
+	//chequeo de parámetro
 	if (!isset($_GET["id"]) ) {
 		header("Location: listadoCategorias.php");
 	}

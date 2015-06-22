@@ -14,6 +14,11 @@ function validarMonto () {
 		document.getElementById("inputMonto").focus();
 		return false;
 	}
+	if ( (parseInt(document.getElementById("inputMonto").value)) <= 0 ) {
+		document.getElementById("campoMonto").innerHTML = "<p class=text-danger>Debe ingresar un número mayor que cero</p>";
+		document.getElementById("inputMonto").focus();
+		return false;	
+	}
 	return true;
 }
 

@@ -2,35 +2,47 @@
 <?php
 	//chequear que esten todos los parámetros necesarios y que ingrese un usuario logueado a esta página
 	session_start();
-	if (isset($_SESSION["autentificado"]) || !isset($_POST["nombres"]) || !isset($_POST["apellidos"]) || !isset($_POST["telefono"]) || !isset($_POST["nombreUsuario"]) ||
-		!isset($_POST["pass"]) || !isset($_POST["e_mail"]) || !isset($_POST["domicilioCalle"]) || !isset($_POST["domicilioNumero"]) ||
-		!isset($_POST["domicilioPiso"]) || !isset($_POST["domicilioDepto"]) 
-		) {
+	if (isset($_SESSION["autentificado"]) || !isset($_POST["nombreUsuario"]) || !isset($_POST["e_mail"]) ) {
 		header ("Location: index.php");
 	}
-
+	
 	include("conexion.php");
-	$result = mysqli_query ($link, "SELECT * FROM Usuario WHERE nombre_usuario='".$_POST["nombreUsuario"]."' ");
-	$num = mysqli_num_rows($result);
-	if ($num  != 0) { 
-			header("Location: registrarse.php?errorUsuario=si");
+	$datosUsuario= mysqli_query ($link, "SELECT * FROM Usuario WHERE nombre_usuario='".$_POST["nombreUsuario"]."' and 
+	e_mail='".$_POST["e_mail"]."' ") or die(mysqli_error($link));
+
+	if (mysqli_num_rows($datosUsuario)==0) {
+		header ("Location:recuperarInformacion.php?errorRecuperacion=si");
 	}
 	else {
-			$codigoActivacion = md5(uniqid(rand()));
-			$resultado = mysqli_query ($link, "INSERT INTO `bestnid`.`usuario` (`nombre`,`apellido`,`telefono`, `nombre_usuario`,
-				`password`, `e_mail`, `confirmado`, `estado`,`calle`,`numero_calle`,`piso`,`depto`, `codigoActivacion`) VALUES ('".$_POST["nombres"]."',
-			'".$_POST["apellidos"]."', '".$_POST["telefono"]."', '".$_POST["nombreUsuario"]."', '".$_POST["pass"]."',
-			'".$_POST["e_mail"]."', 0, 'activo', '".$_POST["domicilioCalle"]."', '".$_POST["domicilioNumero"]."',
-			 '".$_POST["domicilioPiso"]."','".$_POST["domicilioDepto"]."',  '".$codigoActivacion."' )" ) or die(mysqli_error($link));
-	
-			$to = $_POST["e_mail"];
-			$subject = "Confirmación de Bestnid para ".$_POST["nombreUsuario"]." ";
-			$header = "Bestnid: Activar la cuenta de ".$_POST["nombreUsuario"]." ";
-			$message = "Haga click en el enlace que apara debajo para activar su cuenta de Bestnid \n";
-			$message .= "http://localhost/xampp/Bestnid/validarConfirmacionEmail.php?key=".$codigoActivacion." ";
-			$sentmail = mail($to,$subject,$message,$header);
-	} 
-?> 
+		$tuplaUsuario = mysqli_fetch_array($datosUsuario);
+
+		if (isset($_POST["confirmacionEmail"]) and $_POST["confirmacionEmail"]=="1") {
+
+			$to =$tuplaUsuario["e_mail"];
+			$subject = "Confirmación de Bestnid para ".$tuplaUsuario["nombre_usuario"]." ";
+			$headers = '';
+			$headers = 'MIME-Version: 1.0'.PHP_EOL;
+			$headers .= 'Content-type: text/html; charset=iso-8859-1'.PHP_EOL;
+			$headers .= 'From: bestnid@gmail.com <From: bestnid@gmail.com>'.PHP_EOL;
+			$message = "Haga click en el enlace que aparece debajo para activar su cuenta de Bestnid \n";
+			$message .= "http://localhost/xampp/Bestnid/validarConfirmacionEmail.php?key=".$tuplaUsuario["codigoActivacion"]."";
+			$sentmail =  mail($to,utf8_decode($subject),utf8_decode($message),utf8_decode($headers));
+		} 
+		
+		if (isset($_POST["recuperacionContraseña"]) and $_POST["recuperacionContraseña"]=="2") {
+			
+			$to =$tuplaUsuario["e_mail"];
+			$subject = "Recuperar contraseña de Bestnid para ".$tuplaUsuario["nombre_usuario"]." ";
+			$headers = '';
+			$headers = 'MIME-Version: 1.0'.PHP_EOL;
+			$headers .= 'Content-type: text/html; charset=iso-8859-1'.PHP_EOL;
+			$headers .= 'From: bestnid@gmail.com <From: bestnid@gmail.com>'.PHP_EOL;
+			$message = "La contraseña de la cuenta de Bestnid del usuario ".$tuplaUsuario["nombre_usuario"]." es:\n";
+			$message .= $tuplaUsuario["password"];
+			$sentmail = mail($to,utf8_decode($subject),utf8_decode($message),utf8_decode($headers));
+		}
+	}
+?>
 <!DOCTYPE html>
 <html lang="es">
 	<head>
@@ -62,7 +74,7 @@
 			        </ul>
 		        </div>
 		        <div class="col-sm-3 col-md-9">
-		        	<h3>Se ha enviado un email a <?php echo $_POST["e_mail"]; ?> para realizar la activaci&oacute;n de la cuenta</h3>
+		        	<h3>Se han enviado el/los email/s correspondiente/s a <?php echo $_POST["e_mail"]; ?> para recuperar los datos de la cuenta</h3>
 		        </div>
 		    </div>
 		</section>

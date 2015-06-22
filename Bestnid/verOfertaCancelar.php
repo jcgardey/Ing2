@@ -1,5 +1,5 @@
 <?php include("session.php"); ?>
-<!DOCTYPE html>
+<DOCTYPE html>
 <html lang="es">
 	<head>
 		<meta charset="utf-8">
@@ -16,32 +16,33 @@
 	</head>
 	<body>
 		<?php 
-			
-			include ("conexion.php");
-			
+			//chequeo de parametros
 			if (!isset($_GET["idOferta"])) {
-				header("Location:home.php");
+				header("Location: home.php");
 			}
-			//chequear que el usuario logueado es quien realmente hizo la subasta y que la subasta haya finalizado
-			$result=mysqli_query($link, " SELECT * FROM Subasta INNER JOIN Oferta ON Oferta.idSubasta=Subasta.idSubasta 
-				WHERE idOferta='".$_GET["idOferta"]."' and Subasta.idUsuario='".$_SESSION["idUsuario"]."' and estado='finalizada' " );
 
+			include ("conexion.php");
+			//chequear que la oferta exista y que el dueño es el usuario logueado
+			$datosOferta = mysqli_query ($link, "SELECT Subasta.idSubasta, Producto.nombre,Producto.imagen, Producto.descripcion, Oferta.idOferta,
+				Oferta.monto, Oferta.razon 
+				FROM Oferta INNER JOIN Subasta ON Oferta.idSubasta=Subasta.idSubasta
+				INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto 
+				INNER JOIN Usuario ON Usuario.idUsuario=Oferta.idUsuario WHERE Oferta.idOferta='".$_GET["idOferta"]."'
+				and Oferta.idUsuario='".$_SESSION["idUsuario"]."' ") or die (mysqli_error($link));
 
-			if (mysqli_num_rows($result)==0) {
-				header("Location:home.php");
+			if (mysqli_num_rows($datosOferta)==0) {
+				header("Location: home.php");
 			}
 			
-
 			if ($_SESSION["admin"]==true) {
 				include ("navbarAdmin.html"); 
 			}
 			else {
 				include ("navbar.html"); 
 			}
-
 		?>
 		<section class="main container-fluid">
-			<div class="main row">	
+			<div class="main row">
 				<div class="col-sm-3 col-md-2 sidebar">
 		        	<ul class="nav nav-sidebar"> 	
 			            <li class="active"><a class="text-danger" href="home.php"><strong>Categorias</strong></a></li>
@@ -55,45 +56,27 @@
 			        </ul>
 		        </div>
 				<div class="col-md-9">
-					<?php
-
-						$result= mysqli_query ($link, "SELECT Subasta.idSubasta, Producto.nombre AS nomProd, Producto.descripcion, Producto.imagen, Oferta.fecha, Oferta.razon, Oferta.monto, Usuario.nombre_usuario
-						FROM Subasta INNER JOIN Oferta ON Subasta.idSubasta=Oferta.idSubasta 
-						INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto INNER JOIN Usuario ON Oferta.idUsuario=Usuario.idUsuario
-					 	WHERE idOferta='".$_GET["idOferta"]."' ");
-						
-						$row=mysqli_fetch_array($result);
-					?>
+					<h2 class="text-center">Cancelar Oferta</h2>
 					<div class="row well well-lg">
-						<div class="col-md-3">
-							<h2><strong>Confirmar Ganador</strong></h2>
-						</div>
-						<div class="col-md-6">
-							<h1><?php echo $row["nomProd"]; ?></h1>
-							<h3>Descripci&oacute;n:</h3>
+						<?php
+	                     	$row= mysqli_fetch_array ($datosOferta);
+	                    ?>
+						<div class="col-md-7">
+							<h3>Nombre del Producto:</h3>
+							<p class='lead'><?php echo $row["nombre"]; ?></p>
+							<h3>Descripci&oacute;n del Producto:</h3>
 							<p class='lead'><?php echo $row["descripcion"]; ?></p>
-							<h3>Fecha de Realizaci&oacute;n de la oferta:</h3>
-							<p class='lead'><?php echo date('d-m-Y',strtotime($row["fecha"])); ?></p>
-							<h3>Usuario que la realiz&oacute;: </h3>
-							<div>
-								<a href="#" class="lead"><?php echo $row["nombre_usuario"]; ?></a>
-							</div>
-							<br />
-							<div>
-								<a class="btn btn-lg btn-danger" href='guardarGanador.php?<?php echo "idOferta=".$_GET["idOferta"]."&idSubasta=".$_GET["idSubasta"].""; ?>'>Finalizar</a>
-								<a class="btn btn-lg btn-default" href='elegirGanador.php?idSubasta=<?php echo $row["idSubasta"]; ?> '>Cancelar</a>
-							</div>
+							<h3>Raz&oacute;n:</h3>
+							<p class='lead'><?php echo $row["razon"]; ?></p>
+							<h3>Monto:</h3>
+							<p class='lead'>$<?php echo $row["monto"]; ?></p>
+							<a class="btn btn-lg btn-danger" href='<?php echo "cancelarOfertaBD.php?idOferta=".$row["idOferta"]."&idSubasta=".$row["idSubasta"]." "; ?>' >Confirmar</a>
+							<a class="btn btn-lg btn-default" href="home.php">Cancelar</a>
 						</div>
 						<div class="col-md-3">
 							<img src='<?php echo $row["imagen"]; ?>' class="img-responsive" alt="imagen" />
 						</div>
 					</div>
-					<h3><strong>Oferta Elegida</strong></h3>
-					<div class='panel panel-default row'>
-		  				<div class='panel-body container-fluid'>
-		  					<p class='lead'><?php echo $row["razon"]; ?></p>
-		  				</div>
-		  			</div>				  	
 				</div>
 			</div>
 		</section>

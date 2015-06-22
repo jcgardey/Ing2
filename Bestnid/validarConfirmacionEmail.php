@@ -1,4 +1,23 @@
-<?php include("sessionAdmin.php"); ?>
+<?php	
+	if (!isset($_GET["key"])) {
+		header ("Location: home.php");
+	}
+	include ("conexion.php");
+	$datosUsuario= mysqli_query ($link, "SELECT * FROM Usuario WHERE codigoActivacion='".$_GET["key"]."' ") or die (mysqli_error($link));
+	if (mysqli_num_rows($datosUsuario)==1) {
+		$datosU= mysqli_fetch_array($datosUsuario);
+		session_start();
+		$_SESSION["admin"]=false;	
+		$_SESSION["autentificado"]=true;
+		$_SESSION["usuario"]= $datosU["nombre_usuario"];
+		$_SESSION["idUsuario"]= $datosU["idUsuario"];
+		
+		$actualizarConfirmacion = mysqli_query($link, "UPDATE Usuario SET confirmado=1 WHERE idUsuario='".$datosU["idUsuario"]."' ") or die(mysqli_error($link));
+	}
+	else {
+		header("Location: index.php");
+	}
+?>
 <!DOCTYPE html>
 <html lang="es">
 	<head>
@@ -10,14 +29,13 @@
 		<!-- Optional theme -->
 		<link rel="stylesheet" href="Bootstrap/css/bootstrap-theme.min.css">
 		<link rel="stylesheet" href="estilopropio.css">
-
 		<script src="Bootstrap/js/jquery.js"></script>
 		<script src="Bootstrap/js/bootstrap.js"></script>
 	</head>
 	<body>
-		<?php include ("navbarAdmin.html"); ?>
+		<?php include("navbar.html"); ?>
 		<section class="main container-fluid">
-			<aside class="row">	
+			<div class="row">	
 				<div class="col-sm-3 col-md-2 sidebar">
 		        	<ul class="nav nav-sidebar"> 	
 			            <li class="active"><a class="text-danger" href="home.php"><strong>Categorias</strong></a></li>
@@ -31,39 +49,10 @@
 			        </ul>
 		        </div>
 		        <div class="col-sm-3 col-md-9">
-		        	<div class="row">
-		        		<div class="col-md-3 col-md-offset-5">
-		        			<a class="btn btn-danger" href="altaCategoria.php">Ingresar categoria</a>
-		        		</div>
-		        	</div>
-		        	<br />
-		        	<?php			          
-						include("conexion.php");
-						$result = mysqli_query ($link, "SELECT * FROM Categoria");
-						while ($row=mysqli_fetch_array($result) ) {
-							$productosCategoria = mysqli_query ($link, "SELECT * FROM Producto WHERE idCategoria='".$row["idCategoria"]."' ");
-							echo "<div class='panel panel-default row'>
-  									<div class=panel-body>
-  										<div class='col-md-10'>
-    										".$row["nombre"]."
-    									</div>
-    									<div class='col-md-1'>
-    										<a class='btn btn-danger' href='editarCategoria.php?id=".$row["idCategoria"]."' role='button'>Editar</a>
-    									</div>";
-    								//si una categoria posee productos no se debe mostrar el botón eliminar
-    								if (mysqli_num_rows($productosCategoria)==0) {
-    									echo
-    									"<div class='col-md-1'>
-    										<a class='btn btn-danger' href='verCategoria.php?id=".$row["idCategoria"]."' role='button'>Eliminar</a>
-    									</div>";
-    								}
-  								  	echo
-  								  	"</div>
-								  </div>";
-						}
-					?>
+		        	<h4><strong>¡<?php echo $datosU["nombre"]; ?> BIENVENIDO A BESTNID!</strong></h4>
+		        	<h5>Ya pod&eacute;s utilizar tu cuenta</h5>
 		        </div>
-		     </aside>
+		    </div>
 		</section>
 		<footer class="btn-danger">
 			<div class="container">

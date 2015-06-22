@@ -54,7 +54,7 @@
 							FROM Subasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto 
 							INNER JOIN Categoria ON Producto.idCategoria=Categoria.idCategoria 
 							WHERE Producto.nombre like '%".$_POST["input_buscar"]."%' or Producto.descripcion like '%".$_POST["input_buscar"]."%'
-							ORDER BY Subasta.fecha_realizacion DESC, Subasta.estado ");
+							ORDER BY  Subasta.estado, Subasta.fecha_cierre DESC ");
 						
 						while ($row=mysqli_fetch_array($result) ) {
 							
@@ -62,6 +62,7 @@
 							if (isset($_SESSION["autentificado"]) && $_SESSION["autentificado"]==true) {
 								$resultOf=mysqli_query ($link, "SELECT * FROM Oferta WHERE idSubasta='".$row["idSubasta"]."' and idUsuario='".$_SESSION["idUsuario"]."' ");
 								$numRows = mysqli_num_rows ($resultOf);
+								$ofertaDeUsuario=mysqli_fetch_array($resultOf);
 							}
 							echo "<div class='panel panel-default row'>
   									<div class='panel-body container-fluid'>
@@ -83,8 +84,9 @@
     										<p>".$row["descripcion"]."</p>
     									</div>
     									<div class='col-md-2'>
-    										<a class='btn btn-danger' href='verSubasta.php?idSubasta=".$row["idSubasta"]."'>Ver Producto</a>
-    										<br />
+    										<div class='row'>
+    											<a class='btn btn-danger' href='verSubasta.php?idSubasta=".$row["idSubasta"]."'>Ver Producto</a>
+    										</div>
     									";
     								if ($row["estado"]=="activa" && isset($_SESSION["idUsuario"]) && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows==0 ) {
     									echo "
@@ -92,7 +94,12 @@
     										 ";
     								} elseif ($row["estado"]=="activa" && isset($_SESSION["idUsuario"]) && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows>0) {
     									echo "
-    										 <a class='btn btn-danger' href='#'=".$row["idSubasta"]."'>Editar Oferta</a>
+    										 <div class='row'>
+    										 	<a class='btn btn-danger' href='editarOferta.php?idOferta=".$ofertaDeUsuario["idOferta"]."'>Editar Oferta</a>
+    										 </div>
+    										 <div class='row'>
+    										 	<a class='btn btn-danger' href='verOfertaCancelar.php?idOferta=".$ofertaDeUsuario["idOferta"]."'>Cancelar Oferta</a>
+    										 </div>
     										 ";
     								} elseif ($row["estado"]=="finalizada" && isset($_SESSION["idUsuario"]) && $row["idUsuario"]==$_SESSION["idUsuario"]) {
     									echo "
@@ -122,7 +129,7 @@
 						<ul class="list-inline text-right">
 							<li><a href="home.php">Home</a></li>
 							<li><a href="#">Ayuda</a></li>
-							<li><a href="#">Acerca de Bestnid</a></li>
+							<li><a href="acercaBestnid.php">Acerca de Bestnid</a></li>
 						</ul>
 					</div>
 				</div>

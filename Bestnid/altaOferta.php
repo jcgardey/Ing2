@@ -17,19 +17,29 @@
 		<script src="Bootstrap/js/bootstrap.js"></script>
 		<script src="Bootstrap/js/jquery-ui.js"></script>
 		<script src="Bootstrap/js/validarOferta.js"></script>
+		<script src="Bootstrap/js/jquery.mask.js"></script>
+		<script>
+			(function($){
+		       $("#inputMonto").mask("9999999999");
+			})
+
+		</script>
 	</head>
 	<body>
 		<?php 
 			
 			include ("conexion.php");
-			$result = mysqli_query($link,"SELECT * FROM Subasta WHERE idSubasta='".$_GET["idSubasta"]."' and idUsuario='".$_SESSION["idUsuario"]."' ");
+			$result = mysqli_query($link,"SELECT * FROM Subasta WHERE idSubasta ='".$_GET["idSubasta"]."' and idUsuario='".$_SESSION["idUsuario"]."' ");
 			
-			$result2= mysqli_query($link,"SELECT * FROM Oferta WHERE idSubasta='".$_GET["idSubasta"]."' and idUsuario='".$_SESSION["idUsuario"]."' ");
+			$result2= mysqli_query($link,"SELECT * FROM Oferta WHERE idSubasta ='".$_GET["idSubasta"]."' and idUsuario='".$_SESSION["idUsuario"]."' ");
+
+			$result3= mysqli_query($link,"SELECT * FROM Subasta WHERE idSubasta ='".$_GET["idSubasta"]."' and estado='activa' ");
 			
+			//no se puede realizar una oferta si la subasta no existe o ya finalizo
 			//no se puede realizar una oferta sin pasar el id de la subasta por parámetro 
 			//no se puede realizar una oferta si el ofertante es el mismo que el subastador
 			//no se puede realizar una oferta si el usuario logueado ya ofertó
-			if (mysqli_num_rows($result)>0 || mysqli_num_rows($result2)>0 || !isset($_GET["idSubasta"])) {
+			if (mysqli_num_rows($result)>0 || mysqli_num_rows($result2)>0 || mysqli_num_rows($result3)==0 || !isset($_GET["idSubasta"])) {
 				header ("Location: home.php"); 
 			}
 			if ($_SESSION["admin"]==true) {
@@ -58,7 +68,7 @@
 						<h2>Realiza una Oferta</h2>
 					</div>
 					<div class="col-md-7">
-						<form name="frm-oferta" id="f_oferta" method="post" action="verOferta.php">		
+						<form name="frm-oferta" id="f_oferta" method="post" action="verOfertaNueva.php">		
 							<div class="form-group">
 								<label for="inputRazon">Raz&oacute;n por la cual se solicita el producto<span class="text-danger">*</span></label>
 								<textarea class="form-control" rows="5" name="razon" id="inputRazon"></textarea>
@@ -91,7 +101,7 @@
 						<ul class="list-inline text-right">
 							<li><a href="home.php">Home</a></li>
 							<li><a href="#">Ayuda</a></li>
-							<li><a href="#">Acerca de Bestnid</a></li>
+							<li><a href="acercaBestnid.php">Acerca de Bestnid</a></li>
 						</ul>
 					</div>
 				</div>

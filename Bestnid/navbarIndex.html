@@ -51,6 +51,9 @@
 									</label>
 								</div>
 								<button type="submit" id= "btn_entrar" class="btn btn-danger">Entrar</button>
+								<div class="form-group">
+									<a href="recuperarInformacion.php" class="text-danger">¿No puede ingresar?</a>
+								</div>
 								<?php
 									if ( (isset($_GET["error"]) ) && ($_GET["error"]=="si") ) { ?>
 										<p class="text-danger">¡Datos incorrectos!</p>

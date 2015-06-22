@@ -25,15 +25,15 @@
 				header("Location: listadoCategorias.php");
 			}
 			
-			//chequear que la categoria exista
 			include("conexion.php");
-			$result = mysqli_query ($link, "SELECT * FROM Categoria WHERE idCategoria='".$_GET["id"]."' ");
-
-			if (mysqli_num_rows($result)==0) {
-				ader("Location: listadoCategorias.php");
-			}
-
+			//chequear que no existan productos de la categoria a eliminar y que la categoria exista
+			$existenProductos = mysqli_query($link, "SELECT * FROM Producto WHERE idCategoria='".$_GET["id"]."' ");
 			
+			$existeCategoria = mysqli_query($link, "SELECT * FROM Categoria WHERE idCategoria='".$_GET["id"]."' ");
+							
+			if (mysqli_num_rows($existenProductos)>0 || mysqli_num_rows($existeCategoria)==0  ) {
+				header("Location: listadoCategorias.php");
+			}
 		?>
 		<section class="main container-fluid">
 			<div class="main row">
@@ -56,11 +56,7 @@
 					<div class="col-md-7">
 						<?php 
 							include("conexion.php");
-							$result= mysqli_query ($link, "SELECT * FROM Categoria WHERE idCategoria='".$_GET["id"]."' and nombre='Otros' ");
-			
-							if (mysqli_num_rows($result)>0) {
-								header("Location:listadoCategorias.php"); // no se puede eliminar la categoria Otros
-							}
+							
 
 							$result= mysqli_query ($link, "SELECT * FROM Categoria WHERE idCategoria='".$_GET["id"]."' ");
 							$rowCat= mysqli_fetch_array($result);
@@ -87,7 +83,7 @@
 						<ul class="list-inline text-right">
 							<li><a href="home.php">Home</a></li>
 							<li><a href="#">Ayuda</a></li>
-							<li><a href="#">Acerca de Bestnid</a></li>
+							<li><a href="acercaBestnid.php">Acerca de Bestnid</a></li>
 						</ul>
 					</div>
 				</div>

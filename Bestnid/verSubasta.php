@@ -66,47 +66,52 @@
 							if (isset($_SESSION["autentificado"]) && $_SESSION["autentificado"]==true) {
 								$resultOf=mysqli_query ($link, "SELECT * FROM Oferta WHERE idSubasta='".$_GET["idSubasta"]."' and idUsuario='".$_SESSION["idUsuario"]."' ");
 								$numRows = mysqli_num_rows ($resultOf);
+								$ofertaDeUsuario =  mysqli_fetch_array($resultOf);
 							}
 						?>
 			
-						<div class="row">
-							<img src='<?php echo $row["imagen"]; ?>' class="img-responsive" alt="imagen">
+						<div class="col-md-6">
+							<!--<img src='<?php echo $row["imagen"]; ?>' class="img-responsive" alt="imagen"> -->
+							<a href='<?php echo $row["imagen"]; ?>' target="_blank"><img src='<?php echo $row["imagen"]; ?>' class="img-responsive" alt="descripcion" /></a> 
 						</div>
-						<br />
-						<div class="row">
-						<?php
-							if ($row["estado"]=='activa' && isset($_SESSION["idUsuario"]) && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows==0) {
-								echo "<a class='btn btn-danger' href='altaOferta.php?idSubasta=".$_GET["idSubasta"]." '>Ofertar</a> ";
-							} elseif ($row["estado"]=='activa' && isset($_SESSION["idUsuario"]) && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows>0) {
-								echo "<a class='btn btn-danger' href='#'>Editar Oferta</a> ";
-							} elseif ($row["estado"]=='finalizada' && isset($_SESSION["idUsuario"]) && $row["idUsuario"]==$_SESSION["idUsuario"]) {
-								echo "<a class='btn btn-danger' href='elegirGanador.php?idSubasta=".$_GET["idSubasta"]." '>Elegir Ganador</a> ";
-							}
-						?>	
-						</div>
-						<div class="row">
-							<h4><strong>Vendedor: </strong></h4>
-							<?php echo "<a class='lead' href=#>".$row["nombre_usuario"]."</a>"; ?>
-						</div>
-						<div class="row">
-							<h4><strong>Nombre del producto: </strong></h4>
-							<?php echo "<p class='lead'>".$row["nombre"]."</p>"; ?>
-						</div>
-						<div class="row">	
-							<h4><strong>Descripci&oacute;n: </strong></h4>
-							<?php echo "<p class='lead'>".$row["descripcion"]."</p>"; ?>
-						</div>
-						<div class="row">	
-							<h4><strong>Categor&iacute;a: </strong></h4>
-							<?php echo "<p class='lead'>".$row["nomCat"]."</p>"; ?>
-						</div>
-						<div class="row">
-							<h4><strong>Finaliza: </strong></h4>
-							<?php echo "<p class='lead'>".date('d-m-Y',strtotime($row["fecha_cierre"]))."</p>"; ?>
-						</div>
-						<div class="row">
-							<h4><strong>Estado: </strong></h4>
-							<?php echo "<p class='lead'>".$row["estado"]."</p>"; ?>
+						<div class="col-md-6">
+							<div class="row">
+							<?php
+								if ($row["estado"]=='activa' && isset($_SESSION["idUsuario"]) && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows==0) {
+									echo "<a class='btn btn-danger' href='altaOferta.php?idSubasta=".$_GET["idSubasta"]." '>Ofertar</a> ";
+								} elseif ($row["estado"]=='activa' && isset($_SESSION["idUsuario"]) && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows>0) {
+									echo "<div class='row'><a class='btn btn-danger' href='editarOferta.php?idOferta=".$ofertaDeUsuario["idOferta"]."'>Editar Oferta</a></div> ";
+									echo "<br />";
+									echo "<div class='row'><a class='btn btn-danger' href='verOfertaCancelar.php?idOferta=".$ofertaDeUsuario["idOferta"]."'>Cancelar Oferta</a></div>";
+								} elseif ($row["estado"]=='finalizada' && isset($_SESSION["idUsuario"]) && $row["idUsuario"]==$_SESSION["idUsuario"]) {
+									echo "<a class='btn btn-danger' href='elegirGanador.php?idSubasta=".$_GET["idSubasta"]." '>Elegir Ganador</a> ";
+								}
+							?>	
+							</div>
+							<div class="row">
+								<h4><strong>Vendedor: </strong></h4>
+								<?php echo "<a class='lead' href=#>".$row["nombre_usuario"]."</a>"; ?>
+							</div>
+							<div class="row">
+								<h4><strong>Nombre del producto: </strong></h4>
+								<?php echo "<p class='lead'>".$row["nombre"]."</p>"; ?>
+							</div>
+							<div class="row">	
+								<h4><strong>Descripci&oacute;n: </strong></h4>
+								<?php echo "<p class='lead'>".$row["descripcion"]."</p>"; ?>
+							</div>
+							<div class="row">	
+								<h4><strong>Categor&iacute;a: </strong></h4>
+								<?php echo "<p class='lead'>".$row["nomCat"]."</p>"; ?>
+							</div>
+							<div class="row">
+								<h4><strong>Finaliza: </strong></h4>
+								<?php echo "<p class='lead'>".date('d-m-Y',strtotime($row["fecha_cierre"]))."</p>"; ?>
+							</div>
+							<div class="row">
+								<h4><strong>Estado: </strong></h4>
+								<?php echo "<p class='lead'>".$row["estado"]."</p>"; ?>
+							</div>
 						</div>
 					</div>
 					<div class="row">
@@ -132,10 +137,11 @@
 	  											<div class='col-md-10'>
 	  												<p class='lead'>".$rowGan["razon"]."</p>
 	  											</div>";
-	  										if (isset($_SESSION["idUsuario"]) && $_SESSION["idUsuario"]==$row["idUsuario"] ) {
+	  										//solo si el usuario logueado es el subastador puede ver el ganador de la subasta en caso que lo haya
+	  										if (isset($_SESSION["idUsuario"]) && ($_SESSION["idUsuario"]==$row["idUsuario"] || $_SESSION["admin"]==true) ) {
 	  											echo "
 	  											<div class='col-md-2'>
-	  												<a class='btn btn-danger' href='visualizarGanador.php?idOferta=".$rowGan["idOferta"]."'>Ver Ganador</a>
+	  												<a class='btn btn-danger' href='visualizarGanador.php?idOferta=".$rowGan["idOferta"]."&idSubasta=".$_GET["idSubasta"]." '>Ver Ganador</a>
 	  											</div>";
 	  										}
 	  										echo "
@@ -147,6 +153,28 @@
 								}
 							}
 
+							//si el usuario logueado realizo una oferta debe visualizarse
+							if (isset($_SESSION["idUsuario"])) {
+								$resultMiOferta=mysqli_query($link,"SELECT * FROM Oferta INNER JOIN Usuario ON Oferta.idUsuario=Usuario.idUsuario WHERE Oferta.idSubasta='".$_GET["idSubasta"]."' and Oferta.idUsuario='".$_SESSION["idUsuario"]."' ");	
+									if (mysqli_num_rows($resultMiOferta)>0) {
+										$rowOf= mysqli_fetch_array($resultMiOferta);
+										echo "<h3><strong>Mi Oferta</strong></h3>";
+										echo "<div class='panel panel-default row'>
+		  									<div class='panel-body container-fluid'>
+		  										<div class='row'>
+		  											<div class='col-md-10'>
+		  												<a class='lead' href=#>".$rowOf["nombre_usuario"]."</a>
+		  											</div>
+		  										</div>
+		  										<div class='row'>
+		  											<div class='col-md-10'>
+		  												<p class='lead'>".$rowOf["razon"]."</p>
+		  											</div>
+		  										</div>
+		  								  	</div>
+										  </div>";
+									}
+							}
 							//se muestran las ofertas realizadas solo si el usuario logueado es el subastador o si no se pueden realizar mas ofertas en ella
 							if ( (isset($_SESSION["idUsuario"]) && $row["idUsuario"]==$_SESSION["idUsuario"]) || $row["estado"]!='activa') {
 								//chequear si la subasta tiene alguna oferta
@@ -195,7 +223,7 @@
 						<ul class="list-inline text-right">
 							<li><a href="home.php">Home</a></li>
 							<li><a href="#">Ayuda</a></li>
-							<li><a href="#">Acerca de Bestnid</a></li>
+							<li><a href="acercaBestnid.php">Acerca de Bestnid</a></li>
 						</ul>
 					</div>
 				</div>

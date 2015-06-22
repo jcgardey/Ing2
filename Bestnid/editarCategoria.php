@@ -28,18 +28,13 @@
 			}
 			include("conexion.php");
 			
-			//chequear que no se la categoria Otros la que se quiere eliminar
-			$result= mysqli_query ($link, "SELECT * FROM Categoria WHERE idCategoria='".$_GET["id"]."' and nombre='Otros' ");
-			
-			
 			//chequear que la categoria exista
-			$result2= mysqli_query ($link, "SELECT * FROM Categoria WHERE idCategoria='".$_GET["id"]."' ");
-			if (mysqli_num_rows($result)>0 || mysqli_num_rows($result2)==0) {
+			$existeCategoria= mysqli_query ($link, "SELECT * FROM Categoria WHERE idCategoria='".$_GET["id"]."' ");
+			
+			if (mysqli_num_rows($existeCategoria)==0) {
 				header("Location:listadoCategorias.php"); 
 			}
-			
-			$rowCat= mysqli_fetch_array($result2);
-
+			$rowCat= mysqli_fetch_array($existeCategoria);
 			include ("navbarAdmin.html"); 
 		?>
 		<section class="main container-fluid">
@@ -93,7 +88,7 @@
 						<ul class="list-inline text-right">
 							<li><a href="home.php">Home</a></li>
 							<li><a href="#">Ayuda</a></li>
-							<li><a href="#">Acerca de Bestnid</a></li>
+							<li><a href="acercaBestnid.php">Acerca de Bestnid</a></li>
 						</ul>
 					</div>
 				</div>

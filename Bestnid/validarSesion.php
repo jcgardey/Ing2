@@ -1,7 +1,7 @@
 <?php
 	include("conexion.php");
 	$result = mysqli_query ($link, " SELECT * FROM Usuario WHERE Usuario.nombre_usuario='".$_POST["input_user"]."' and 
-		Usuario.password= '".$_POST["input_password"]."' ");
+		Usuario.password= '".$_POST["input_password"]."' and confirmado=1 ");
 	if (mysqli_num_rows($result)==1) {
 		session_start();
 		$row=mysqli_fetch_array($result);

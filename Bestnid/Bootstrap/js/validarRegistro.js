@@ -62,8 +62,8 @@ function validarDomicilio () {
 
 function validarPassword () {
 	var expRegPass = /(^(?=.*[a-z])(?=.*[A-Z])(?=.*\d){6,20}.+$)/;
-	if (validarCampo(expRegPass,"inputPassword","campoPassword","Contraseña no válida")) {
-		if (document.getElementById("inputRepetirPassword").value == document.getElementById("inputPassword").value ) {
+	if (validarCampo(expRegPass,"inPassword","campoPassword","Contraseña no válida")) {
+		if (document.getElementById("inputRepetirPassword").value == document.getElementById("inPassword").value ) {
 			return true;	
 		}
 		else {
@@ -79,7 +79,6 @@ function validarForm () {
 	var expRegUsuario = /^[a-z\d_]{4,15}$/;
 	var expRegMail=/[\w-\.]{3,}@([\w-]{2,}\.)*([\w-]{2,}\.)[\w-]{2,4}/;
 	var expRegTelefono=/^\+?\d{1,3}?[- .]?\(?(?:\d{2,3})\)?[- .]?\d\d\d[- .]?\d\d\d\d$/;
-	var expRegPass = /(^(?=.*[a-z])(?=.*[A-Z])(?=.*\d){6,20}.+$)/;
 	if ( (validarCampo(expRegNombre,"inputNombres","campoNombresyApellidos","solo se aceptan letras")) 
 		&& (validarCampo(expRegNombre,"inputApellidos","campoNombresyApellidos","solo se aceptan letras"))
 		&& (validarCampo(expRegUsuario,"inputUsuario","campoUsuario","solo se acpetan letras y numeros"))
