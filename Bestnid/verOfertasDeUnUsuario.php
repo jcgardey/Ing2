@@ -1,4 +1,6 @@
-<?php include ("session.php"); ?>
+<?php 
+	include("session.php"); 
+?>
 <!DOCTYPE html>
 <html lang="es">
 	<head>
@@ -16,17 +18,6 @@
 	</head>
 	<body>
 		<?php 
-			
-			//chequear que el usuario logueado es quien realmente hizo la subasta y que la subasta haya finalizado
-			include ("conexion.php");
-			$result=mysqli_query($link, " SELECT * FROM Subasta WHERE idSubasta='".$_GET["idSubasta"]."' and idUsuario='".$_SESSION["idUsuario"]."' and estado='finalizada' " );
-		
-			//chequeo de parámetros
-			if (!isset($_GET["idSubasta"]) || mysqli_num_rows($result)==0) {
-				header("Location: home.php");
-			}
-			
-
 			if ($_SESSION["admin"]==true) {
 				include ("navbarAdmin.html"); 
 			}
@@ -35,7 +26,7 @@
 			}
 		?>
 		<section class="main container-fluid">
-			<aside class="row">	
+			<div class="main row">	
 				<div class="col-sm-3 col-md-2 sidebar">
 		        	<ul class="nav nav-sidebar"> 	
 			            <li class="active"><a class="text-danger" href="home.php"><strong>Categorias</strong></a></li>
@@ -51,28 +42,46 @@
 		        <div class="col-sm-3 col-md-9">
 		        	<?php			          
 						include("conexion.php");
-						$result = mysqli_query ($link, "SELECT Oferta.idUsuario,Oferta.idOferta,Oferta.razon,Usuario.nombre_usuario FROM Oferta INNER JOIN Usuario ON Oferta.idUsuario=Usuario.idUsuario
-							WHERE idSubasta='".$_GET["idSubasta"]."' ");
+						
+						$result = mysqli_query ($link, "SELECT Oferta.idOferta,Oferta.razon,Oferta.monto,Oferta.idSubasta,Subasta.estado FROM OFerta INNER JOIN Subasta ON Oferta.idSubasta=Subasta.idSubasta WHERE Oferta.idUsuario='".$_SESSION["idUsuario"]."'
+						ORDER BY fecha DESC  ")
+						or die (mysqli_error($link));
+
+						//en caso que el usuario no posea ofertas realizdas
+						if (mysqli_num_rows($result)==0) {
+							echo "<h3 class='text-danger'>No ha realizado ninguna oferta</h3>";
+						}
+						
 						while ($row=mysqli_fetch_array($result) ) {
-							echo "<div class='panel panel-default row'>
-  									<div class=panel-body>
-  										<div class='col-md-11'>
-	  										<div class='row'>
-	    										<a href='verPerfilDeUsuario.php?idUsuario=".$row["idUsuario"]."'>".$row["nombre_usuario"]."</a>
-	    									</div>
-	    									<div class='row'>
-	    										<p class='lead'>".$row["razon"]."</p>
-	    									</div>
-	    								</div>
-    									<div class='col-md-1'>
-    										<a class='btn btn-danger' href='confirmarGanador.php?idOferta=".$row["idOferta"]."&idSubasta=".$_GET["idSubasta"]." ' role='button'>Elegir</a>
+							echo "<div class='well well-sm row'>
+  									<div class='col-md-10'>
+    									<h4 class='text-left text-danger'>Raz&oacute;n</h4>
+    									<p>".$row["razon"]."</p>
+    									<h4 class='text-left text-danger'>Monto</h4>
+    									<p>$".$row["monto"]."</p>
+    								</div>;
+    								<div class='col-md-2'>
+    									<div class='row'>
+    										<a class='btn btn-danger' href='verSubasta.php?idSubasta=".$row["idSubasta"]."'>Ver Producto</a>
+    									</div>";
+    								if ($row["estado"]=='activa') {	
+    									echo "
+    									<br />
+    									<div class='row'>
+    										<a class='btn btn-danger' href='verOfertaCancelar.php?idOferta=".$row["idOferta"]."'>Cancelar Oferta</a>
     									</div>
-  								  	</div>
-								  </div>";
+    									<br />
+    									<div class='row'>
+    										<a class='btn btn-danger' href='editarOferta.php?idOferta=".$row["idOferta"]."'>Editar Oferta</a>
+    									</div>";
+    								}
+    								echo "
+    								</div>
+    							  </div>";			
 						}
 					?>
 		        </div>
-		     </aside>
+		     </div>
 		</section>
 		<footer class="btn-danger">
 			<div class="container">

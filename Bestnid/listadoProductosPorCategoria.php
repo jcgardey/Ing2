@@ -15,6 +15,7 @@
 		<script src="Bootstrap/js/bootstrap.js"></script>
 	</head>
 	<body>
+		
 		<?php 
 			session_start();
 			if (isset($_SESSION["autentificado"]) && $_SESSION["autentificado"]) {
@@ -44,6 +45,13 @@
 			        </ul>
 		        </div>
 		        <div class="col-sm-3 col-md-9">
+		        	<span>Ordenar por:</span>
+		        	<ul class="list-inline">
+							<li><a href='<?php echo "listadoProductosPorCategoria.php?idCategoria=".$_GET["idCategoria"]."&order=estado ASC"; ?>'>Estado</a></li>
+							<li><a href='<?php echo "listadoProductosPorCategoria.php?idCategoria=".$_GET["idCategoria"]."&order=fecha_cierre DESC"; ?>' >Fecha de finalizaci&oacute;n</a></li>
+							<li><a href='<?php echo "listadoProductosPorCategoria.php?idCategoria=".$_GET["idCategoria"]."&order=nombre ASC"; ?>' >Nombre</a></li>
+														<li><a href='<?php echo "listadoProductosPorCategoria.php?idCategoria=".$_GET["idCategoria"]."&order=fecha_realizacion DESC"; ?>' >Mas nuevas</a></li>
+					</ul>
 		        	<?php			          
 						include("conexion.php");
 						//obtener la descripción de la categoria que se pasó por parámetro
@@ -58,10 +66,17 @@
 						$result= mysqli_query ($link,"UPDATE Subasta SET estado ='cerrada' WHERE estado='finalizada' and NOT EXISTS (SELECT * FROM Oferta WHERE Oferta.idSubasta=Subasta.idSubasta)");
 
 
-						$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.estado,Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion 
-							FROM Subasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto
-							WHERE Producto.idCategoria='".$_GET["idCategoria"]."'
-							ORDER BY Subasta.estado, Subasta.fecha_cierre DESC ");
+						//sino se pasa un criterio de ordenación no se ordenan las subastas
+						if (!isset($_GET["order"]) || ($_GET["order"]!="estado ASC" && $_GET["order"]!="fecha_cierre DESC" && $_GET["order"]!="nombre ASC") ) {
+							$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.estado,Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion 
+								FROM Subasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto
+								WHERE Producto.idCategoria='".$_GET["idCategoria"]."' ");
+						}
+						else {
+							$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.estado,Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion 
+								FROM Subasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto
+								WHERE Producto.idCategoria='".$_GET["idCategoria"]."' ORDER BY ".$_GET["order"]." ");
+						}
 
 						//en caso que no haya productos de esa categoria
 						if (mysqli_num_rows($result)==0) {

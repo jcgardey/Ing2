@@ -7,6 +7,7 @@
 			INNER JOIN Subasta ON Oferta.idSubasta=Subasta.idSubasta 
 			INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto
 			INNER JOIN Usuario ON Subasta.idUsuario=Usuario.idUsuario");
+			$totalGanado = mysqli_query($link, "SELECT sum(venta.porcentaje * oferta.monto/100) AS totalGanado FROM Venta INNER JOIN Oferta ON Oferta.idOferta=Venta.idOferta ");
 	}
 	else {
 		$ventas = mysqli_query ($link, "SELECT Venta.porcentaje, Venta.fecha, Oferta.monto,Subasta.idSubasta,Usuario.nombre_usuario, Usuario.nombre AS nombrePilaUsuario, Usuario.apellido, Venta.porcentaje, Producto.nombre
@@ -16,8 +17,10 @@
 			INNER JOIN Usuario ON Subasta.idUsuario=Usuario.idUsuario 
 			WHERE Venta.fecha>=STR_TO_DATE('".$_POST["fechaDesde"]."','%d/%m/%Y') and 
 			Venta.fecha<= STR_TO_DATE('".$_POST["fechaHasta"]."','%d/%m/%Y')  ");
+
+			$totalGanado = mysqli_query($link, "SELECT sum(venta.porcentaje * oferta.monto/100) AS totalGanado FROM Venta INNER JOIN Oferta ON Oferta.idOferta=Venta.idOferta
+			WHERE Venta.fecha>=STR_TO_DATE('".$_POST["fechaDesde"]."','%d/%m/%Y') and Venta.fecha<= STR_TO_DATE('".$_POST["fechaHasta"]."','%d/%m/%Y')  ");
 	}
-	$totalGanado = mysqli_query($link, "SELECT sum(venta.porcentaje * oferta.monto/100) AS totalGanado FROM Venta INNER JOIN Oferta ON Oferta.idOferta=Venta.idOferta ");
 ?>
 <DOCTYPE html>
 <html lang="es">

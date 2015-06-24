@@ -58,6 +58,7 @@
 							}
 					
 							$row=mysqli_fetch_array($result);
+							$rowRespuesta = $row;
 
 							//cambiar estado de la subasta en caso que se haya alcanzado su fecha de cierre
 							$result2=mysqli_query ($link, "UPDATE Subasta SET estado='finalizada' WHERE estado='activa' and idSubasta='".$_GET["idSubasta"]."' and fecha_cierre <= current_date()  ");
@@ -67,6 +68,12 @@
 								$resultOf=mysqli_query ($link, "SELECT * FROM Oferta WHERE idSubasta='".$_GET["idSubasta"]."' and idUsuario='".$_SESSION["idUsuario"]."' ");
 								$numRows = mysqli_num_rows ($resultOf);
 								$ofertaDeUsuario =  mysqli_fetch_array($resultOf);
+							}
+							//evaluar en caso de que haya un usuario logueado, si ya hizo un comentario en esta subasta
+							if (isset($_SESSION["autentificado"]) && $_SESSION["autentificado"]==true) {
+								$resultOf=mysqli_query ($link, "SELECT * FROM Comentario WHERE idSubasta='".$_GET["idSubasta"]."' and idUsuario='".$_SESSION["idUsuario"]."' ");
+								$numRowsCom = mysqli_num_rows ($resultOf);
+								$comentarioDeUsuario =  mysqli_fetch_array($resultOf);
 							}
 						?>
 			
@@ -83,14 +90,21 @@
 									echo "<div class='row'><a class='btn btn-danger' href='editarOferta.php?idOferta=".$ofertaDeUsuario["idOferta"]."'>Editar Oferta</a></div> ";
 									echo "<br />";
 									echo "<div class='row'><a class='btn btn-danger' href='verOfertaCancelar.php?idOferta=".$ofertaDeUsuario["idOferta"]."'>Cancelar Oferta</a></div>";
+									echo "<br />";
 								} elseif ($row["estado"]=='finalizada' && isset($_SESSION["idUsuario"]) && $row["idUsuario"]==$_SESSION["idUsuario"]) {
-									echo "<a class='btn btn-danger' href='elegirGanador.php?idSubasta=".$_GET["idSubasta"]." '>Elegir Ganador</a> ";
+									echo "<div class='row'><a class='btn btn-danger' href='elegirGanador.php?idSubasta=".$_GET["idSubasta"]." '>Elegir Ganador</a></div>";
+									echo "<br />";
 								}
 							?>	
+							<?php
+								if ($row["estado"]=='activa' && isset($_SESSION["idUsuario"]) && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRowsCom==0) {
+									echo "<div class='row'><a class='btn btn-danger' href='altaComentario.php?idSubasta=".$_GET["idSubasta"]." '>Comentar</a></div>";
+								}
+							?>
 							</div>
 							<div class="row">
 								<h4><strong>Vendedor: </strong></h4>
-								<?php echo "<a class='lead' href=#>".$row["nombre_usuario"]."</a>"; ?>
+								<?php echo "<a class='lead' href='verPerfilDeUsuario.php?idUsuario=".$row["idUsuario"]."'>".$row["nombre_usuario"]."</a>"; ?>
 							</div>
 							<div class="row">
 								<h4><strong>Nombre del producto: </strong></h4>
@@ -120,7 +134,7 @@
 							
 							//chequear si la subasta tiene una oferta ganadora
 							if ($row["estado"]=='cerrada') {
-								$result=mysqli_query ($link, "SELECT * FROM Oferta INNER JOIN Venta ON Oferta.idOferta=Venta.idOferta INNER JOIN Usuario ON Usuario.idUsuario=Oferta.idUsuario
+								$result=mysqli_query ($link, "SELECT Oferta.razon,Usuario.idUsuario,Usuario.nombre_usuario FROM Oferta INNER JOIN Venta ON Oferta.idOferta=Venta.idOferta INNER JOIN Usuario ON Usuario.idUsuario=Oferta.idUsuario
 									WHERE Oferta.idSubasta='".$_GET["idSubasta"]."' ");
 								
 								if (mysqli_num_rows($result) != 0) {
@@ -130,7 +144,7 @@
 	  									<div class='panel-body container-fluid'>
 	  										<div class='row'>
 	  											<div class='col-md-10'>
-	  												<a class='lead' href=#>".$rowGan["nombre_usuario"]."</a>
+	  												<a class='lead' href='verPerfilDeUsuario.php?idUsuario=".$rowGan["idUsuario"]."'>".$rowGan["nombre_usuario"]."</a>
 	  											</div>
 	  										</div>
 	  										<div class='row'>
@@ -163,13 +177,41 @@
 		  									<div class='panel-body container-fluid'>
 		  										<div class='row'>
 		  											<div class='col-md-10'>
-		  												<a class='lead' href=#>".$rowOf["nombre_usuario"]."</a>
+		  												<a class='lead' href='verPerfilDeUsuario.php?idUsuario=".$_SESSION["idUsuario"]."'>".$rowOf["nombre_usuario"]."</a>
 		  											</div>
 		  										</div>
 		  										<div class='row'>
 		  											<div class='col-md-10'>
 		  												<p class='lead'>".$rowOf["razon"]."</p>
 		  											</div>
+		  										</div>
+		  								  	</div>
+										  </div>";
+									}
+							}
+							
+							//si el usuario logueado realizo un comentario debe visualizarse
+							if (isset($_SESSION["idUsuario"])) {
+								$resultMiComentario=mysqli_query($link,"SELECT Usuario.idUsuario,Usuario.nombre_usuario, Comentario.texto,Comentario.respuesta 
+									FROM Comentario INNER JOIN Usuario ON Comentario.idUsuario=Usuario.idUsuario WHERE Comentario.idSubasta='".$_GET["idSubasta"]."' and Comentario.idUsuario='".$_SESSION["idUsuario"]."' ");	
+									if (mysqli_num_rows($resultMiComentario)>0) {
+										$rowOff= mysqli_fetch_array($resultMiComentario);
+										echo "<h3><strong>Mi Comentario</strong></h3>";
+										echo "<div class='panel panel-default row'>
+		  									<div class='panel-body container-fluid'>
+		  										<div class='row'>
+		  											<div class='col-md-10'>
+		  												<a class='lead' href='verPerfilDeUsuario.php?idUsuario=".$rowOff["idUsuario"]."'>".$rowOff["nombre_usuario"]."</a>
+		  											</div>
+		  										</div>
+		  										<div class='row'>
+		  											<div class='col-md-10'>
+		  												<p class='lead'>".$rowOff["texto"]."</p>";
+														if($rowOff["respuesta"]!=""){
+															echo "<p class='lead'>Respuesta:</p>";
+															echo "<p class='lead'>".$rowOff["respuesta"]."</p>";
+														}
+		  											echo "</div>
 		  										</div>
 		  								  	</div>
 										  </div>";
@@ -186,25 +228,69 @@
 									echo "<h3><strong>No hay ofertas realizadas</strong></h3>";
 								}
 								
-								$result= mysqli_query ($link, "SELECT * FROM Oferta INNER JOIN Usuario ON Oferta.idUsuario=Usuario.idUsuario 
+								$result= mysqli_query ($link, "SELECT Usuario.idUsuario,Usuario.nombre_usuario,Oferta.razon FROM Oferta INNER JOIN Usuario ON Oferta.idUsuario=Usuario.idUsuario 
 									WHERE Oferta.idSubasta='".$_GET["idSubasta"]."' ");
 								while ($row=mysqli_fetch_array($result) ) {
 									echo "<div class='panel panel-default row'>
 		  									<div class='panel-body container-fluid'>
 		  										<div class='row'>
 		  											<div class='col-md-10'>
-		  												<a class='lead' href=#>".$row["nombre_usuario"]."</a>
+		  												<a class='lead' href='verPerfilDeUsuario.php?idUsuario=".$row["idUsuario"]."'>".$row["nombre_usuario"]."</a>
 		  											</div>
 		  										</div>
 		  										<div class='row'>
 		  											<div class='col-md-10'>
 		  												<p class='lead'>".$row["razon"]."</p>
+
 		  											</div>
 		  										</div>
 		  								  	</div>
 										  </div>";
 								}
 							}
+							
+							//se muestran los comentarios realizados independientemente de si el usuario logueado es el subastador o si no se pueden realizar mas comentarios en ella
+							
+								//chequear si la subasta tiene algun comentario
+								$result=mysqli_query($link,"SELECT * FROM Comentario WHERE idSubasta='".$_GET["idSubasta"]."' ");
+								if (mysqli_num_rows($result)>0) {
+									echo "<h3><strong>Comentarios Realizados</strong></h3>";
+								}
+								else {
+									echo "<h3><strong>No hay comentarios realizados</strong></h3>";
+								}
+								
+								$result= mysqli_query ($link, "SELECT Comentario.idComentario, Comentario.texto,Comentario.respuesta, Usuario.idUsuario, Usuario.nombre_usuario 
+									FROM Comentario INNER JOIN Usuario ON Comentario.idUsuario=Usuario.idUsuario 
+									WHERE Comentario.idSubasta='".$_GET["idSubasta"]."' ");
+								while ($row=mysqli_fetch_array($result) ) {
+									echo "<div class='panel panel-default row'>
+		  									<div class='panel-body container-fluid'>
+		  										<div class='row'>
+		  											<div class='col-md-10'>
+		  												<a class='lead' href='verPerfilDeUsuario.php?idUsuario=".$row["idUsuario"]."'>".$row["nombre_usuario"]."</a>
+		  											</div>
+		  										</div>
+		  										<div class='row'>
+		  											<div class='col-md-10'>
+		  												<p class='lead'>".$row["texto"]."</p>";
+														if($row["respuesta"]!=""){
+															echo "<p class='lead text-danger'>Respuesta:</p>";
+															echo "<p class='lead'>".$row["respuesta"]."</p>";
+														}
+		  											echo "</div>";
+													//si el usuario registrado es el subastador se ven los botones de responder a menos que la subasta no este activa o ya exista respuesta
+													if(isset($_SESSION["idUsuario"]) && $rowRespuesta["idUsuario"]==$_SESSION["idUsuario"] && $rowRespuesta["estado"]=='activa' && $row["respuesta"]==""){
+														echo "
+														<div class='col-md-2'>
+																<a class='btn btn-danger' href='altaRespuesta.php?idComentario=".$row["idComentario"]."'>Responder</a>
+														</div>";
+														}
+		  										echo "</div>
+		  								  	</div>
+										  </div>";
+								}
+							
 						?>
 					</div>
 				</div>

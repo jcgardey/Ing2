@@ -40,6 +40,13 @@
 			        </ul>
 		        </div>
 		        <div class="col-sm-3 col-md-9">
+		        	<span>Ordenar por:</span>
+		        	<ul class="list-inline">
+							<li><a href="verSubastasDeUnUsuario.php?order=estado ASC">Estado</a></li>
+							<li><a href="verSubastasDeUnUsuario.php?order=fecha_cierre DESC">Fecha de finalizaci&oacute;n</a></li>
+							<li><a href="verSubastasDeUnUsuario.php?order=nombre ASC">Nombre</a></li>
+							<li><a href="verSubastasDeUnUsuario.php?order=fecha_realizacion DESC">Mas nuevas</a></li>
+					</ul>
 		        	<?php			          
 						include("conexion.php");
 						
@@ -50,11 +57,19 @@
 						$result= mysqli_query ($link,"UPDATE Subasta SET estado ='cerrada' WHERE estado='finalizada' and NOT EXISTS (SELECT * FROM Oferta WHERE Oferta.idSubasta=Subasta.idSubasta)");
 
 
-						$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.estado,Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion, Categoria.nombre AS nomCat 
-							FROM Subasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto 
-							INNER JOIN Categoria ON Producto.idCategoria=Categoria.idCategoria 
-							WHERE Subasta.idUsuario='".$_SESSION["idUsuario"]."'
-							ORDER BY  Subasta.estado, Subasta.fecha_cierre DESC");
+						//sino se pasa un criterio de ordenación no se ordenan las subastas
+						if (!isset($_GET["order"]) || ($_GET["order"]!="estado ASC" && $_GET["order"]!="fecha_cierre DESC" && $_GET["order"]!="nombre ASC") ) {
+							$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.estado,Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion, Categoria.nombre AS nomCat 
+								FROM Subasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto 
+								INNER JOIN Categoria ON Producto.idCategoria=Categoria.idCategoria 
+								WHERE Subasta.idUsuario='".$_SESSION["idUsuario"]."' ");
+						}
+						else {
+							$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.estado,Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion, Categoria.nombre AS nomCat 
+								FROM Subasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto 
+								INNER JOIN Categoria ON Producto.idCategoria=Categoria.idCategoria 
+								WHERE Subasta.idUsuario='".$_SESSION["idUsuario"]."' ORDER BY ".$_GET["order"]." ");
+						}
 
 						//en caso que el usuario no posea subastas realizdas
 						if (mysqli_num_rows($result)==0) {

@@ -14,19 +14,13 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Bestnid</title>
-		<!-- Latest compiled and minified CSS -->
 		<link rel="stylesheet" href="Bootstrap/css/bootstrap.min.css">
-
 		<!-- Optional theme -->
 		<link rel="stylesheet" href="Bootstrap/css/bootstrap-theme.min.css">
-		
 		<link rel="stylesheet" href="estilopropio.css">
-		<link rel="stylesheet" href="Bootstrap/css/jquery-ui.css" />
-
+		<script src="Bootstrap/js/jquery.js"></script>
 		<script src="Bootstrap/js/bootstrap.js"></script>
 		<script src="Bootstrap/js/validarRegistro.js"></script>
-		<script src="Bootstrap/js/jquery-1.11.3.js"></script>
-		<script src="Bootstrap/js/jquery-ui.js"></script>
 		<script>
 			function validarFormActualizar () {
 				var expRegNombre=/^[a-zA-ZÑñÁáÉéÍíÓóÚúÜü\s]+$/;
@@ -46,8 +40,7 @@
 			window.onload = function () {
 				document.getElementById("btn_actualizar").onclick=validarFormActualizar;
 			}
-		</script>
-				
+		</script>		
 	</head>
 	<body>
 		<?php 

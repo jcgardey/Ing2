@@ -1,4 +1,4 @@
-<?php session_start(); ?>
+<?php include("session.php"); ?>
 <!DOCTYPE html>
 <html lang="es">
 	<head>
@@ -16,17 +16,27 @@
 	</head>
 	<body>
 		<?php 
-			if (!isset($_GET["input_buscar"])) {
-				header("Location: home.php");
-			}
-			if (isset($_SESSION["admin"]) && $_SESSION["admin"]==true) {
+			
+			include ("conexion.php");
+			
+			if (!isset($_GET["idUsuario"]) ) {
+				header("Location:home.php");
+			}			
+
+			if ($_SESSION["admin"]==true) {
 				include ("navbarAdmin.html"); 
 			}
-			elseif (isset($_SESSION["admin"]) && $_SESSION["admin"]==false) {
+			else {
 				include ("navbar.html"); 
-			} else {
-				include ("navbarIndex.html");
 			}
+			//buscar los datos del Usuario
+			$datosUsuario = mysqli_query($link, "SELECT nombre,apellido,nombre_usuario FROM Usuario WHERE idUsuario='".$_GET["idUsuario"]."' ");
+			if (mysqli_num_rows($datosUsuario)==0) {
+				header ("Location: home.php");
+			}
+
+			$tuplaUsuario=mysqli_fetch_array($datosUsuario);
+
 		?>
 		<section class="main container-fluid">
 			<div class="main row">	
@@ -42,50 +52,35 @@
 						?>
 			        </ul>
 		        </div>
-		        <div class="col-sm-3 col-md-9">
-		        	<span>Ordenar por:</span>
-		        	<ul class="list-inline">
-							<li><a href='<?php echo "buscarProducto.php?input_buscar=".$_GET["input_buscar"]."&order=estado ASC"; ?>'>Estado</a></li>
-							<li><a href='<?php echo "buscarProducto.php?input_buscar=".$_GET["input_buscar"]."&order=fecha_cierre DESC"; ?>'>Fecha de finalizaci&oacute;n</a></li>
-							<li><a href='<?php echo "buscarProducto.php?input_buscar=".$_GET["input_buscar"]."&order=nombre ASC"; ?>'>Nombre</a></li>
-							<li><a href='<?php echo "buscarProducto.php?input_buscar=".$_GET["input_buscar"]."&order=fecha_realizacion DESC"; ?>'>Mas nuevas</a></li>
-					</ul>
-		        	<?php			          
-						include("conexion.php");
-						
+				<div class="col-md-9">
+					<h2 class="text-center"><strong>Perfil de Usuario</strong></h2>
+					<div class="row well well-sm">
+						<div class="col-md-9">
+							<h3 class="text-danger">Nombre de usuario:</h3>
+							<p class='lead'><?php echo $tuplaUsuario["nombre_usuario"]; ?></p>
+							<h3 class="text-danger">Nombre y apellido:</h3>
+							<p class='lead'><?php echo "".$tuplaUsuario["nombre"]." ".$tuplaUsuario["apellido"]." "; ?></p>
+						</div>
+					</div>
+					<h3><strong>Productos subastados</strong></h3>
+					<div class="row">
+					<?php 
 						//finalizar aquellas subastas para las que se alcanzo su fecha de fin
 						$result= mysqli_query ($link,"UPDATE Subasta SET estado='finalizada' WHERE estado='activa' and fecha_cierre<=current_date()");
 						
 						//cancelar subastas que finalizaron sin ofertas
 						$result= mysqli_query ($link,"UPDATE Subasta SET estado ='cerrada' WHERE estado='finalizada' and NOT EXISTS (SELECT * FROM Oferta WHERE Oferta.idSubasta=Subasta.idSubasta)");
 
-
-						if (!isset($_GET["order"]) || ($_GET["order"]!="estado ASC" && $_GET["order"]!="fecha_cierre DESC" && $_GET["order"]!="nombre ASC") ) {
-							$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.estado,Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion, Categoria.nombre AS nomCat 
+						$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.estado,Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion, Categoria.nombre AS nomCat 
 								FROM Subasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto 
-								INNER JOIN Categoria ON Producto.idCategoria=Categoria.idCategoria 
-								WHERE Producto.nombre like '%".$_GET["input_buscar"]."%' or Producto.descripcion like '%".$_GET["input_buscar"]."%' ");
-						}
-						else {
-							$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.estado,Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion, Categoria.nombre AS nomCat 
-								FROM Subasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto 
-								INNER JOIN Categoria ON Producto.idCategoria=Categoria.idCategoria 
-								WHERE Producto.nombre like '%".$_GET["input_buscar"]."%' or Producto.descripcion like '%".$_GET["input_buscar"]."%' ORDER BY ".$_GET["order"]." ");
-						}
+								INNER JOIN Categoria ON Producto.idCategoria=Categoria.idCategoria
+								WHERE Subasta.idUsuario='".$_GET["idUsuario"]."' ORDER BY Subasta.fecha_realizacion DESC") or die (mysqli_error($link));
 
-						//si no se obtuvieron resultados..
-						if (mysqli_num_rows($result)==0) {
-							echo "<h3 class='text-danger'>No se obtuvieron resultados para '".$_GET["input_buscar"]."'</h3>";
-						}
-						
 						while ($row=mysqli_fetch_array($result) ) {
+							$resultOf=mysqli_query ($link, "SELECT * FROM Oferta WHERE idSubasta='".$row["idSubasta"]."' and idUsuario='".$_SESSION["idUsuario"]."' ");
+							$numRows = mysqli_num_rows ($resultOf);
+							$ofertaDeUsuario=mysqli_fetch_array($resultOf);
 							
-							//en caso que haya una sesion iniciada se debe verificar si el usuario logueado realizo la subasta actual
-							if (isset($_SESSION["autentificado"]) && $_SESSION["autentificado"]==true) {
-								$resultOf=mysqli_query ($link, "SELECT * FROM Oferta WHERE idSubasta='".$row["idSubasta"]."' and idUsuario='".$_SESSION["idUsuario"]."' ");
-								$numRows = mysqli_num_rows ($resultOf);
-								$ofertaDeUsuario=mysqli_fetch_array($resultOf);
-							}
 							echo "<div class='panel panel-default row'>
   									<div class='panel-body container-fluid'>
   										<div class='col-md-2'>
@@ -99,6 +94,9 @@
     											<h5><strong>Finaliza: </strong>".date('d-m-Y',strtotime($row["fecha_cierre"]))."</h5>
     										</div>
     										<div class='row'>
+    											<h5><strong>Categoría: </strong>".$row["nomCat"]."</h5>
+    										</div>
+    										<div class='row'>
     											<h5><strong>Estado: </strong>".$row["estado"]."</h5>
     										</div>
     									</div>
@@ -107,14 +105,16 @@
     									</div>
     									<div class='col-md-2'>
     										<div class='row'>
-    											<a class='btn btn-danger' href='verSubasta.php?idSubasta=".$row["idSubasta"]."'>Ver Producto</a>
+    										<a class='btn btn-danger' href='verSubasta.php?idSubasta=".$row["idSubasta"]."'>Ver Producto</a>
     										</div>
     									";
-    								if ($row["estado"]=="activa" && isset($_SESSION["idUsuario"]) && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows==0 ) {
+    								if ($row["estado"]=="activa" && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows==0 ) {
     									echo "
+    										<div class='row'>
     										<a class='btn btn-danger' href='altaOferta.php?idSubasta=".$row["idSubasta"]."'>Ofertar</a>
+    										</div>
     										 ";
-    								} elseif ($row["estado"]=="activa" && isset($_SESSION["idUsuario"]) && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows>0) {
+    								} elseif ($row["estado"]=="activa" && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows>0) {
     									echo "
     										 <div class='row'>
     										 	<a class='btn btn-danger' href='editarOferta.php?idOferta=".$ofertaDeUsuario["idOferta"]."'>Editar Oferta</a>
@@ -123,9 +123,11 @@
     										 	<a class='btn btn-danger' href='verOfertaCancelar.php?idOferta=".$ofertaDeUsuario["idOferta"]."'>Cancelar Oferta</a>
     										 </div>
     										 ";
-    								} elseif ($row["estado"]=="finalizada" && isset($_SESSION["idUsuario"]) && $row["idUsuario"]==$_SESSION["idUsuario"]) {
+    								} elseif ($row["estado"]=="finalizada" && $row["idUsuario"]==$_SESSION["idUsuario"]) {
     									echo "
+    										 <div class='row'>
     										 <a class='btn btn-danger' href='elegirGanador.php?idSubasta=".$row["idSubasta"]."'>Elegir Ganador</a>
+    									     </div>
     									     ";
     								}
     								echo "
@@ -134,9 +136,9 @@
 								  </div>";
 						}
 					?>
-		        </div>
-
-		     </div>
+					</div>				  	
+				</div>
+			</div>
 		</section>
 		<footer class="btn-danger">
 			<div class="container">
@@ -156,6 +158,6 @@
 					</div>
 				</div>
 			</div>
-		</footer>	
+		</footer>
 	</body>
 </html>

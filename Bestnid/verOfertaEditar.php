@@ -1,5 +1,5 @@
-<?php include ("session.php"); ?>
-<!DOCTYPE html>
+<?php include("session.php"); ?>
+<DOCTYPE html>
 <html lang="es">
 	<head>
 		<meta charset="utf-8">
@@ -16,17 +16,24 @@
 	</head>
 	<body>
 		<?php 
-			
-			//chequear que el usuario logueado es quien realmente hizo la subasta y que la subasta haya finalizado
+			//chequeo de parametros
+			if (!isset($_POST["idOferta"]) || !isset($_POST["monto"])) {
+				header("Location: home.php");
+			}
+
 			include ("conexion.php");
-			$result=mysqli_query($link, " SELECT * FROM Subasta WHERE idSubasta='".$_GET["idSubasta"]."' and idUsuario='".$_SESSION["idUsuario"]."' and estado='finalizada' " );
-		
-			//chequeo de parámetros
-			if (!isset($_GET["idSubasta"]) || mysqli_num_rows($result)==0) {
+			//chequear que la oferta exista y que el dueño es el usuario logueado
+			$datosOferta = mysqli_query ($link, "SELECT Subasta.idSubasta, Producto.nombre,Producto.imagen, Producto.descripcion, Oferta.idOferta,
+				Oferta.monto, Oferta.razon 
+				FROM Oferta INNER JOIN Subasta ON Oferta.idSubasta=Subasta.idSubasta
+				INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto 
+				INNER JOIN Usuario ON Usuario.idUsuario=Oferta.idUsuario WHERE Oferta.idOferta='".$_POST["idOferta"]."'
+				and Oferta.idUsuario='".$_SESSION["idUsuario"]."' ") or die (mysqli_error($link));
+
+			if (mysqli_num_rows($datosOferta)==0) {
 				header("Location: home.php");
 			}
 			
-
 			if ($_SESSION["admin"]==true) {
 				include ("navbarAdmin.html"); 
 			}
@@ -35,7 +42,7 @@
 			}
 		?>
 		<section class="main container-fluid">
-			<aside class="row">	
+			<div class="main row">
 				<div class="col-sm-3 col-md-2 sidebar">
 		        	<ul class="nav nav-sidebar"> 	
 			            <li class="active"><a class="text-danger" href="home.php"><strong>Categorias</strong></a></li>
@@ -48,31 +55,31 @@
 						?>
 			        </ul>
 		        </div>
-		        <div class="col-sm-3 col-md-9">
-		        	<?php			          
-						include("conexion.php");
-						$result = mysqli_query ($link, "SELECT Oferta.idUsuario,Oferta.idOferta,Oferta.razon,Usuario.nombre_usuario FROM Oferta INNER JOIN Usuario ON Oferta.idUsuario=Usuario.idUsuario
-							WHERE idSubasta='".$_GET["idSubasta"]."' ");
-						while ($row=mysqli_fetch_array($result) ) {
-							echo "<div class='panel panel-default row'>
-  									<div class=panel-body>
-  										<div class='col-md-11'>
-	  										<div class='row'>
-	    										<a href='verPerfilDeUsuario.php?idUsuario=".$row["idUsuario"]."'>".$row["nombre_usuario"]."</a>
-	    									</div>
-	    									<div class='row'>
-	    										<p class='lead'>".$row["razon"]."</p>
-	    									</div>
-	    								</div>
-    									<div class='col-md-1'>
-    										<a class='btn btn-danger' href='confirmarGanador.php?idOferta=".$row["idOferta"]."&idSubasta=".$_GET["idSubasta"]." ' role='button'>Elegir</a>
-    									</div>
-  								  	</div>
-								  </div>";
-						}
-					?>
-		        </div>
-		     </aside>
+				<div class="col-md-9">
+					<h2 class="text-center">Editar Oferta</h2>
+					<div class="row well well-lg">
+						<?php
+	                     	$row= mysqli_fetch_array ($datosOferta);
+	                    ?>
+						<div class="col-md-7">
+							<h3>Nombre del Producto:</h3>
+							<p class='lead'><?php echo $row["nombre"]; ?></p>
+							<h3>Descripci&oacute;n del Producto:</h3>
+							<p class='lead'><?php echo $row["descripcion"]; ?></p>
+							<h3>Raz&oacute;n:</h3>
+							<p class='lead'><?php echo $row["razon"]; ?></p>
+							<h3>Monto:</h3>
+							<p class='lead'>$<?php echo $_POST["monto"]; ?></p>
+							<a class="btn btn-lg btn-danger" href='<?php echo "editarOfertaBD.php?idOferta=".$row["idOferta"]."
+							&monto=".$_POST["monto"]." ";?>'>Editar</a>
+							<a class="btn btn-lg btn-default" href="home.php">Cancelar</a>
+						</div>
+						<div class="col-md-3">
+							<img src='<?php echo $row["imagen"]; ?>' class="img-responsive" alt="imagen" />
+						</div>
+					</div>
+				</div>
+			</div>
 		</section>
 		<footer class="btn-danger">
 			<div class="container">
