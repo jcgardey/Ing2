@@ -87,18 +87,15 @@
 								if ($row["estado"]=='activa' && isset($_SESSION["idUsuario"]) && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows==0) {
 									echo "<a class='btn btn-danger' href='altaOferta.php?idSubasta=".$_GET["idSubasta"]." '>Ofertar</a> ";
 								} elseif ($row["estado"]=='activa' && isset($_SESSION["idUsuario"]) && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRows>0) {
-									echo "<div class='row'><a class='btn btn-danger' href='editarOferta.php?idOferta=".$ofertaDeUsuario["idOferta"]."'>Editar Oferta</a></div> ";
-									echo "<br />";
-									echo "<div class='row'><a class='btn btn-danger' href='verOfertaCancelar.php?idOferta=".$ofertaDeUsuario["idOferta"]."'>Cancelar Oferta</a></div>";
-									echo "<br />";
+									echo "<a class='btn btn-danger' href='editarOferta.php?idOferta=".$ofertaDeUsuario["idOferta"]."'>Editar Oferta</a>";
+									echo "<a class='btn btn-danger' href='verOfertaCancelar.php?idOferta=".$ofertaDeUsuario["idOferta"]."'>Cancelar Oferta</a>";
 								} elseif ($row["estado"]=='finalizada' && isset($_SESSION["idUsuario"]) && $row["idUsuario"]==$_SESSION["idUsuario"]) {
-									echo "<div class='row'><a class='btn btn-danger' href='elegirGanador.php?idSubasta=".$_GET["idSubasta"]." '>Elegir Ganador</a></div>";
-									echo "<br />";
+									echo "<a class='btn btn-danger' href='elegirGanador.php?idSubasta=".$_GET["idSubasta"]." '>Elegir Ganador</a>";
 								}
 							?>	
 							<?php
 								if ($row["estado"]=='activa' && isset($_SESSION["idUsuario"]) && $row["idUsuario"]!=$_SESSION["idUsuario"] && $numRowsCom==0) {
-									echo "<div class='row'><a class='btn btn-danger' href='altaComentario.php?idSubasta=".$_GET["idSubasta"]." '>Comentar</a></div>";
+									echo "<a class='btn btn-danger' href='altaComentario.php?idSubasta=".$_GET["idSubasta"]." '>Comentar</a>";
 								}
 							?>
 							</div>
@@ -134,39 +131,46 @@
 							
 							//chequear si la subasta tiene una oferta ganadora
 							if ($row["estado"]=='cerrada') {
-								$result=mysqli_query ($link, "SELECT Oferta.razon,Usuario.idUsuario,Usuario.nombre_usuario FROM Oferta INNER JOIN Venta ON Oferta.idOferta=Venta.idOferta INNER JOIN Usuario ON Usuario.idUsuario=Oferta.idUsuario
-									WHERE Oferta.idSubasta='".$_GET["idSubasta"]."' ");
+								$hayOfertas=mysqli_query ($link, "SELECT * FROM Oferta WHERE idSubasta='".$_GET["idSubasta"]."'");
 								
-								if (mysqli_num_rows($result) != 0) {
-									$rowGan = mysqli_fetch_array($result);
-									echo "<h3 class='text-danger'><strong>Oferta Ganadora</strong></h3>";
-									echo "<div class='panel panel-default row'>
-	  									<div class='panel-body container-fluid'>
-	  										<div class='row'>
-	  											<div class='col-md-10'>
-	  												<a class='lead' href='verPerfilDeUsuario.php?idUsuario=".$rowGan["idUsuario"]."'>".$rowGan["nombre_usuario"]."</a>
-	  											</div>
-	  										</div>
-	  										<div class='row'>
-	  											<div class='col-md-10'>
-	  												<p class='lead'>".$rowGan["razon"]."</p>
-	  											</div>";
-	  										//solo si el usuario logueado es el subastador puede ver el ganador de la subasta en caso que lo haya
-	  										if (isset($_SESSION["idUsuario"]) && ($_SESSION["idUsuario"]==$row["idUsuario"] || $_SESSION["admin"]==true) ) {
-	  											echo "
-	  											<div class='col-md-2'>
-	  												<a class='btn btn-danger' href='visualizarGanador.php?idOferta=".$rowGan["idOferta"]."&idSubasta=".$_GET["idSubasta"]." '>Ver Ganador</a>
-	  											</div>";
-	  										}
-	  										echo "
-	  										</div>
-	  								  	</div>
-									  </div>";
-								} else {
-									echo "<h3 class='text-danger'><strong>Esta subasta finaliz&oacute; sin ofertas</strong></h3>";
+								if (mysqli_num_rows($hayOfertas) != 0) {
+									//chequear si la subasta fue cerrada automáticamente por el sistema o el subastador eligió un ganador
+									$result=mysqli_query ($link, "SELECT Oferta.idOferta,Oferta.razon,Usuario.idUsuario,Usuario.nombre_usuario FROM Oferta INNER JOIN Venta ON Oferta.idOferta=Venta.idOferta INNER JOIN Usuario ON Usuario.idUsuario=Oferta.idUsuario
+										WHERE Oferta.idSubasta='".$_GET["idSubasta"]."' ");
+									if (mysqli_num_rows($result)==0) {
+										echo "<h3 class='text-danger'><strong>Esta subasta fue cerrada autom&aacute;ticamente por el sistema</strong></h3>";
+									}
+									else {
+										$rowGan = mysqli_fetch_array($result);
+										echo "<h3 class='text-danger'><strong>Oferta Ganadora</strong></h3>";
+										echo "<div class='panel panel-default row'>
+		  									<div class='panel-body container-fluid'>
+		  										<div class='row'>
+		  											<div class='col-md-10'>
+		  												<a class='lead' href='verPerfilDeUsuario.php?idUsuario=".$rowGan["idUsuario"]."'>".$rowGan["nombre_usuario"]."</a>
+		  											</div>
+		  										</div>
+		  										<div class='row'>
+		  											<div class='col-md-10'>
+		  												<p class='lead'>".$rowGan["razon"]."</p>
+		  											</div>";
+		  										//solo si el usuario logueado es el subastador puede ver el ganador de la subasta en caso que lo haya
+		  										if (isset($_SESSION["idUsuario"]) && ($_SESSION["idUsuario"]==$row["idUsuario"] || $_SESSION["admin"]==true) ) {
+		  											echo "
+		  											<div class='col-md-2'>
+		  												<a class='btn btn-danger' href='visualizarGanador.php?idOferta=".$rowGan["idOferta"]."&idSubasta=".$_GET["idSubasta"]." '>Ver Ganador</a>
+		  											</div>";
+		  										}
+		  										echo "
+		  										</div>
+		  								  	</div>
+										  </div>";
+									} 
 								}
+								else {
+										echo "<h3 class='text-danger'><strong>Esta subasta finaliz&oacute; sin ofertas</strong></h3>";
+								}	
 							}
-
 							//si el usuario logueado realizo una oferta debe visualizarse
 							if (isset($_SESSION["idUsuario"])) {
 								$resultMiOferta=mysqli_query($link,"SELECT * FROM Oferta INNER JOIN Usuario ON Oferta.idUsuario=Usuario.idUsuario WHERE Oferta.idSubasta='".$_GET["idSubasta"]."' and Oferta.idUsuario='".$_SESSION["idUsuario"]."' ");	
@@ -289,8 +293,7 @@
 		  										echo "</div>
 		  								  	</div>
 										  </div>";
-								}
-							
+								}	
 						?>
 					</div>
 				</div>

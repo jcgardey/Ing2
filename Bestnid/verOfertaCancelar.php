@@ -61,7 +61,7 @@
 						<?php
 	                     	$row= mysqli_fetch_array ($datosOferta);
 	                    ?>
-						<div class="col-md-7">
+						<div class="col-md-9">
 							<h3>Nombre del Producto:</h3>
 							<p class='lead'><?php echo $row["nombre"]; ?></p>
 							<h3>Descripci&oacute;n del Producto:</h3>

@@ -86,7 +86,7 @@
   								if ($row["respuesta"]!="") {
   									echo "
   								  		<h4><strong>Respuesta:</strong></h4>
-  								  		<p>".$row["texto"]."</p>";
+  								  		<p>".$row["respuesta"]."</p>";
   								}  	
   								else {
   									echo"

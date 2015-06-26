@@ -45,14 +45,54 @@
 		        <div class="col-sm-3 col-md-9">
 		        	<span>Ordenar por:</span>
 		        	<ul class="list-inline">
-							<li><a href='<?php echo "buscarProducto.php?input_buscar=".$_GET["input_buscar"]."&order=estado ASC"; ?>'>Estado</a></li>
-							<li><a href='<?php echo "buscarProducto.php?input_buscar=".$_GET["input_buscar"]."&order=fecha_cierre DESC"; ?>'>Fecha de finalizaci&oacute;n</a></li>
-							<li><a href='<?php echo "buscarProducto.php?input_buscar=".$_GET["input_buscar"]."&order=nombre ASC"; ?>'>Nombre</a></li>
-							<li><a href='<?php echo "buscarProducto.php?input_buscar=".$_GET["input_buscar"]."&order=fecha_realizacion DESC"; ?>'>Mas nuevas</a></li>
-					</ul>
+						<li>
+							<div class="dropdown">
+							  	<button class="btn btn-default dropdown-toggle" type="button" id="dropdownEstado" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+								    Fecha de finalizaci&oacute;n
+								    <span class="caret"></span>
+							  	</button>
+								 <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+								  	<li><a href='<?php echo "buscarProducto.php?input_buscar=".$_GET["input_buscar"]."&order=fecha_cierre ASC"; ?>'>Ascendente</a></li>
+								  	<li><a href='<?php echo "buscarProducto.php?input_buscar=".$_GET["input_buscar"]."&order=fecha_cierre DESC"; ?>'>Descendente</a></li>   
+								 </ul>
+							</div>
+						</li>
+						<li>
+							<div class="dropdown">
+							  	<button class="btn btn-default dropdown-toggle" type="button" id="dropdownEstado" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+								    Nombre
+								    <span class="caret"></span>
+							  	</button>
+								 <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+								  	<li><a href='<?php echo "buscarProducto.php?input_buscar=".$_GET["input_buscar"]."&order=nombre ASC"; ?>'>Ascendente</a></li>
+								  	<li><a href='<?php echo "buscarProducto.php?input_buscar=".$_GET["input_buscar"]."&order=nombre DESC"; ?>'>Descendente</a></li>   
+								 </ul>
+							</div>
+						</li>
+						<li>
+							<div class="dropdown">
+							  	<button class="btn btn-default dropdown-toggle" type="button" id="dropdownEstado" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+								    Fecha de realizaci&oacute;n
+								    <span class="caret"></span>
+							  	</button>
+								 <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+								  	<li><a href='<?php echo "buscarProducto.php?input_buscar=".$_GET["input_buscar"]."&order=fecha_realizacion ASC"; ?>'>Ascendente</a></li>
+								  	<li><a href='<?php echo "buscarProducto.php?input_buscar=".$_GET["input_buscar"]."&order=fecha_realizacion DESC"; ?>'>Descendente</a></li>   
+								 </ul>
+							</div>
+						</li>
+					</ul>	
 		        	<?php			          
 						include("conexion.php");
 						
+						//cerrar automáticamente las subastas finalizadas que hayan excedido el tiempo máximo para elegir un ganador
+						$tiempoLimiteQuery= mysqli_query($link,"SELECT CONVERT(valor,unsigned) as value FROM Configuracion WHERE clave='tiempoLimiteElegirGanador'");
+						$tiempoLimiteElegirGanador= mysqli_fetch_array($tiempoLimiteQuery);
+
+						$actualizarSubastas = mysqli_query($link, "UPDATE Subasta SET estado='cerrada' WHERE (current_date()> date_add(fecha_cierre,INTERVAL ".$tiempoLimiteElegirGanador["value"]." DAY)) and estado='finalizada' ") or die (mysqli_error($link));
+
+
+
 						//finalizar aquellas subastas para las que se alcanzo su fecha de fin
 						$result= mysqli_query ($link,"UPDATE Subasta SET estado='finalizada' WHERE estado='activa' and fecha_cierre<=current_date()");
 						
@@ -60,17 +100,17 @@
 						$result= mysqli_query ($link,"UPDATE Subasta SET estado ='cerrada' WHERE estado='finalizada' and NOT EXISTS (SELECT * FROM Oferta WHERE Oferta.idSubasta=Subasta.idSubasta)");
 
 
-						if (!isset($_GET["order"]) || ($_GET["order"]!="estado ASC" && $_GET["order"]!="fecha_cierre DESC" && $_GET["order"]!="nombre ASC") ) {
-							$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.estado,Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion, Categoria.nombre AS nomCat 
+						if (!isset($_GET["order"]) || ($_GET["order"]!="estado ASC" && $_GET["order"]!="estado DESC" && $_GET["order"]!="fecha_cierre ASC" && $_GET["order"]!="fecha_cierre DESC" && $_GET["order"]!="nombre ASC" && $_GET["order"]!="nombre DESC" && $_GET["order"]!="fecha_realizacion ASC" && $_GET["order"]!="fecha_realizacion DESC") ) {
+							$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.estado,Subasta.fecha_realizacion,Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion, Categoria.nombre AS nomCat 
 								FROM Subasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto 
 								INNER JOIN Categoria ON Producto.idCategoria=Categoria.idCategoria 
-								WHERE Producto.nombre like '%".$_GET["input_buscar"]."%' or Producto.descripcion like '%".$_GET["input_buscar"]."%' ");
+								WHERE (Producto.nombre like '%".$_GET["input_buscar"]."%' or Producto.descripcion like '%".$_GET["input_buscar"]."%') and Subasta.estado='activa'");
 						}
 						else {
-							$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.estado,Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion, Categoria.nombre AS nomCat 
+							$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.estado,Subasta.fecha_realizacion,Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion, Categoria.nombre AS nomCat 
 								FROM Subasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto 
 								INNER JOIN Categoria ON Producto.idCategoria=Categoria.idCategoria 
-								WHERE Producto.nombre like '%".$_GET["input_buscar"]."%' or Producto.descripcion like '%".$_GET["input_buscar"]."%' ORDER BY ".$_GET["order"]." ");
+								WHERE (Producto.nombre like '%".$_GET["input_buscar"]."%' or Producto.descripcion like '%".$_GET["input_buscar"]."%') and Subasta.estado='activa' ORDER BY ".$_GET["order"]." ");
 						}
 
 						//si no se obtuvieron resultados..
@@ -96,10 +136,13 @@
     											<h3>".$row["nombre"]."</h3>
     										</div>
     										<div class='row'>
+    											<h5><strong>Realizada: </strong>".date('d-m-Y',strtotime($row["fecha_realizacion"]))."</h5>
+    										</div>
+    										<div class='row'>
     											<h5><strong>Finaliza: </strong>".date('d-m-Y',strtotime($row["fecha_cierre"]))."</h5>
     										</div>
     										<div class='row'>
-    											<h5><strong>Estado: </strong>".$row["estado"]."</h5>
+    											<h5><strong>Categoría: </strong>".$row["nomCat"]."</h5>
     										</div>
     									</div>
     									<div class='col-md-5'>

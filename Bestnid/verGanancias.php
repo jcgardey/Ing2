@@ -7,7 +7,7 @@
 			INNER JOIN Subasta ON Oferta.idSubasta=Subasta.idSubasta 
 			INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto
 			INNER JOIN Usuario ON Subasta.idUsuario=Usuario.idUsuario");
-			$totalGanado = mysqli_query($link, "SELECT sum(venta.porcentaje * oferta.monto/100) AS totalGanado FROM Venta INNER JOIN Oferta ON Oferta.idOferta=Venta.idOferta ");
+			$totalGanado = mysqli_query($link, "SELECT round(sum(venta.porcentaje * oferta.monto/100),2) AS totalGanado FROM Venta INNER JOIN Oferta ON Oferta.idOferta=Venta.idOferta ") or die (mysqli_error($link));
 	}
 	else {
 		$ventas = mysqli_query ($link, "SELECT Venta.porcentaje, Venta.fecha, Oferta.monto,Subasta.idSubasta,Usuario.nombre_usuario, Usuario.nombre AS nombrePilaUsuario, Usuario.apellido, Venta.porcentaje, Producto.nombre
@@ -18,7 +18,7 @@
 			WHERE Venta.fecha>=STR_TO_DATE('".$_POST["fechaDesde"]."','%d/%m/%Y') and 
 			Venta.fecha<= STR_TO_DATE('".$_POST["fechaHasta"]."','%d/%m/%Y')  ");
 
-			$totalGanado = mysqli_query($link, "SELECT sum(venta.porcentaje * oferta.monto/100) AS totalGanado FROM Venta INNER JOIN Oferta ON Oferta.idOferta=Venta.idOferta
+			$totalGanado = mysqli_query($link, "SELECT round(sum(venta.porcentaje * oferta.monto/100),2) AS totalGanado FROM Venta INNER JOIN Oferta ON Oferta.idOferta=Venta.idOferta
 			WHERE Venta.fecha>=STR_TO_DATE('".$_POST["fechaDesde"]."','%d/%m/%Y') and Venta.fecha<= STR_TO_DATE('".$_POST["fechaHasta"]."','%d/%m/%Y')  ");
 	}
 ?>
@@ -99,22 +99,24 @@
 			        </ul>
 		        </div>
 		        <div class="col-md-9">
+					<h3 class="text-center">Ganancias</h3>
+					<br />
 					<form class="form-inline" id="formularioFechasDeVentas" action="verGanancias.php" method="POST">
 								<div class="form-group">
 									<label for="f_desde">Desde</label>
-									<input name="fechaDesde" type="text" class="form-control" readonly="readonly" id="f_desde" placeholder="">
+									<input name="fechaDesde" type="text" class="form-control" readonly="readonly" id="f_desde" placeholder=""
+									value='<?php if (isset($_POST["fechaDesde"])) { echo $_POST["fechaDesde"]; } else {echo ""; } ?>' >
 								</div>
 								<div class="form-group">
 									<label for="f_hasta">Hasta</label>
-									<input name="fechaHasta" type="text" class="form-control" readonly="readonly" id="f_hasta" placeholder="">
+									<input name="fechaHasta" type="text" class="form-control" readonly="readonly" id="f_hasta" placeholder=""
+									value='<?php if (isset($_POST["fechaHasta"])) { echo $_POST["fechaHasta"]; } else {echo "";} ?>'>
 								</div>
 								<button type="button" id="b_aceptar" class="btn btn-default">Aceptar</button>
 					</form>
 					<div id="campoFecha">
 					</div>
-					<div class="row">
-						<h3 class="text-center">Ganancias</h3>
-					</div>
+					<a href="verGanancias.php" class="btn btn-danger">Todas</a>
 					<div class="row">
 						<br />
 						<h4 class="text-danger"><strong>TOTAL GANADO: $<?php echo mysqli_fetch_array($totalGanado)["totalGanado"];?></strong></h4>
@@ -129,6 +131,7 @@
 								<td><strong>Producto</strong></td>
 								<td><strong>Comisi&oacute;n</strong></td>
 								<td><strong>Monto ganado</strong></td>
+								<td><strong>Monto de la venta</strong></td>
 							</tr>
 							<?php
 								while ($row=mysqli_fetch_array($ventas)) {
@@ -142,7 +145,7 @@
 									<td>".$row["nombre"]."</td>
 									<td>".$row["porcentaje"]."%</td>
 									<td>$".$montoGanado."</td>
-									
+									<td>$".$row["monto"]."</td>
 								</tr> ";
 								}
 							?>

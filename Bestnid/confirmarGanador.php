@@ -57,7 +57,7 @@
 				<div class="col-md-9">
 					<?php
 
-						$result= mysqli_query ($link, "SELECT Subasta.idSubasta, Producto.nombre AS nomProd, Producto.descripcion, Producto.imagen, Oferta.fecha, Oferta.razon, Oferta.monto, Usuario.nombre_usuario
+						$result= mysqli_query ($link, "SELECT Subasta.idSubasta, Producto.nombre AS nomProd, Producto.descripcion, Producto.imagen, Oferta.fecha, Oferta.razon, Oferta.monto, Usuario.nombre_usuario,Usuario.idUsuario
 						FROM Subasta INNER JOIN Oferta ON Subasta.idSubasta=Oferta.idSubasta 
 						INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto INNER JOIN Usuario ON Oferta.idUsuario=Usuario.idUsuario
 					 	WHERE idOferta='".$_GET["idOferta"]."' ");
@@ -76,7 +76,7 @@
 							<p class='lead'><?php echo date('d-m-Y',strtotime($row["fecha"])); ?></p>
 							<h3>Usuario que la realiz&oacute;: </h3>
 							<div>
-								<a href="#" class="lead"><?php echo $row["nombre_usuario"]; ?></a>
+								<a href='<?php echo "verPerfilDeUsuario.php?idUsuario=".$row["idUsuario"]." ";?>' class="lead"><?php echo $row["nombre_usuario"]; ?></a>
 							</div>
 							<br />
 							<div>

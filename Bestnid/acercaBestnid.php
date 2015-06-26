@@ -40,6 +40,7 @@
 			        </ul>
 		        </div>
 		        <div class="col-sm-3 col-md-9">
+		        	<img src="logo.png">
 		        	<h3><strong>Acerca de Bestnid</strong></h3>	
 		        	<p class="text-danger text-justify">
 			        	Bestnid es considerado un remate, pero un tanto particular. En Bestnid el bien subastado no se adjudica al 

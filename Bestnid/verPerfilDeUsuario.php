@@ -65,6 +65,12 @@
 					<h3><strong>Productos subastados</strong></h3>
 					<div class="row">
 					<?php 
+						
+						//cerrar automáticamente las subastas finalizadas que hayan excedido el tiempo máximo para elegir un ganador
+						$tiempoLimiteQuery= mysqli_query($link,"SELECT CONVERT(valor,unsigned) as value FROM Configuracion WHERE clave='tiempoLimiteElegirGanador'");
+						$tiempoLimiteElegirGanador= mysqli_fetch_array($tiempoLimiteQuery) ["value"];
+						$actualizarSubastas = mysqli_query($link, "UPDATE Subasta SET estado='cerrada' WHERE current_date()>date_add(fecha_realizacion,INTERVAL +".$tiempoLimiteElegirGanador.") ");
+
 						//finalizar aquellas subastas para las que se alcanzo su fecha de fin
 						$result= mysqli_query ($link,"UPDATE Subasta SET estado='finalizada' WHERE estado='activa' and fecha_cierre<=current_date()");
 						
