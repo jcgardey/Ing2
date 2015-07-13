@@ -50,7 +50,13 @@
 										include ("conexion.php");
 										$mensajesNoLeidos = mysqli_query($link, "SELECT * FROM Mensaje WHERE leido= 0");
 									?>
-									<li><a href="mensajesAdministrador.php">Mensajes <span class="badge"><?php echo mysqli_num_rows($mensajesNoLeidos);?></span></a></li>
+									<li>
+										<?php if (mysqli_num_rows($mensajesNoLeidos) > 0) { ?>
+										<a href="mensajesAdministrador.php">Mensajes <span class="badge"><?php echo mysqli_num_rows($mensajesNoLeidos);?></span></a>
+										<?php } else { ?>
+											<a href="mensajesAdministradorv.php">Mensajes</a>
+										<?php } ?>
+									</li>
 									<li><a href="verDatosPersonales.php">Mis datos</a></li>
 									<li><a href="verSubastasDeUnUsuario.php">Mis subastas</a></li>
 									<li><a href="verOfertasDeUnUsuario.php">Mis ofertas</a></li>

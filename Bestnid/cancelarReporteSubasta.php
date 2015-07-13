@@ -1,9 +1,9 @@
 <?php
-	include ("sessionAdmin.php");
+	include("sessionAdmin.php");
 	include ("conexion.php");
 
 	$existeSubastaReportada = mysqli_query($link, "SELECT * FROM Subasta WHERE idSubasta='".$_GET["idSubasta"]."' and reportada=1");
-	if (!isset($_GET["idSubasta"]) || mysqli_num_rows($existeSubastaReportada)==0) {
+	if (!isset($_GET["idSubasta"]) || mysqli_num_rows($existeSubastaReportada)==0 || !$_SESSION["admin"]) {
 		header ("Location: home.php");
 	}
 	else {

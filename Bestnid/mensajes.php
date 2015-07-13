@@ -103,5 +103,24 @@
 		        </div>
 		    </div>
 		</section>
+		<footer class="btn-danger">
+			<div class="container">
+				<div class="row">
+					<h4 class="text-center">Sistema de Subastas Bestnid</h4>
+				</div>
+				<div class="row">
+					<div class="col-md-6">
+						<p>Luca Cucchetti - Juan Cruz Gardey - Brian C&eacute;spedes </p>
+					</div>
+					<div class="col-md-6">
+						<ul class="list-inline text-right">
+							<li><a href="home.php">Home</a></li>
+							<li><a href="Ayuda.pdf">Ayuda</a></li>
+							<li><a href="acercaBestnid.php">Acerca de Bestnid</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</footer>
 	</body>
 </html>

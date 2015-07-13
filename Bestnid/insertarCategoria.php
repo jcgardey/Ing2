@@ -3,7 +3,7 @@
 	include("conexion.php");
 	$result = mysqli_query ($link, "SELECT * FROM Categoria WHERE nombre='".$_POST["nombreCategoria"]."' ");
 	$num = mysqli_num_rows($result);
-	if ($num  != 0) { 
+	if ($num  != 0 || !$_SESSION["admin"]) { 
 			header("Location: altaCategoria.php?error=si");
 	}
 	else {

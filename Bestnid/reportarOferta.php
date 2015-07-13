@@ -2,9 +2,10 @@
 	include("session.php");
 	include("conexion.php");
 
-	//chequear que la subasta a la cual pertenece la oferta este activa y que la oferta no haya sido reportada
+	//chequear que la subasta a la cual pertenece la oferta este activa, que la oferta no haya sido reportada y que el reportante sea 
+	//el dueño de la subasta a la cual pertenece la oferta
 	$existeOferta = mysqli_query ($link, "SELECT Subasta.idSubasta FROM Oferta INNER JOIN Subasta ON Oferta.idSubasta=Subasta.idSubasta 
-		WHERE Oferta.idOferta='".$_GET["idOferta"]."' and Subasta.estado <> 'cerrada' and Oferta.reportada = 0 ") or die (mysqli_error($link));
+		WHERE Oferta.idOferta='".$_GET["idOferta"]."' and Subasta.estado <> 'cerrada' and Subasta.idUsuario='".$_SESSION["idUsuario"]."' and Oferta.reportada = 0 ") or die (mysqli_error($link));
 
 	//el administrador no puede reportar
 	if (mysqli_num_rows($existeOferta)==0 || !isset($_GET["idOferta"]) || $_SESSION["admin"]) {

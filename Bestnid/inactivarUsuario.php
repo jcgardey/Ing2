@@ -1,7 +1,7 @@
 <?php
 	include("sessionAdmin.php");
 	include("conexion.php");
-	if(!isset($_GET["idUsuario"])){
+	if(!isset($_GET["idUsuario"]) || !$_SESSION["admin"]){
 		header("Location:home.php");
 	}
 	else {

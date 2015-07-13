@@ -131,7 +131,7 @@
 								$hayOfertaGanadora= mysqli_query($link,"SELECT Oferta.idOferta, Venta.comisionPagada FROM Venta INNER JOIN Oferta ON Venta.idOferta=Oferta.idOferta WHERE Oferta.idSubasta='".$_GET["idSubasta"]."'");
 								$ofertaGanadora=mysqli_fetch_array ($hayOfertaGanadora);
 
-								if ($row["estado"]=='cerrada' && isset($_SESSION["idUsuario"]) && $row["idUsuario"]==$_SESSION["idUsuario"] && mysqli_num_rows($hayOfertaGanadora)==1 && $ofertaGanadora["comisionPagada"]==0) {
+								if ($row["estado"]=='cerrada' && isset($_SESSION["idUsuario"]) && $row["idUsuario"]==$_SESSION["idUsuario"] && !$_SESSION["admin"] && mysqli_num_rows($hayOfertaGanadora)==1 && $ofertaGanadora["comisionPagada"]==0) {
 									echo "<div class='col-md-4'><a class='btn btn-danger' href='pagarComision.php?idOferta=".$ofertaGanadora["idOferta"]." '>Pagar Comisi&oacute;n</a></div>";
 								}
 							?>
@@ -166,7 +166,7 @@
 								if ($row["estado"]!='cerrada' && $row["reportada"]=="0" && isset($_SESSION["idUsuario"]) && !$_SESSION["admin"]) {
 									echo "<div class='row'><a class='btn btn-default' onclick='reportarSubasta()' href='#'>Reportar Subasta</a></div>";	
 								}
-								if ($row["reportada"]=="1") {
+								if (isset($_SESSION["idUsuario"]) && $row["reportada"]=="1") {
 									echo "<h5 class='text-danger'><strong>ESTA SUBASTA HA SIDO REPORTADA</strong></h5>";
 								}
 							?>
@@ -408,7 +408,7 @@
 					<div class="col-md-6">
 						<ul class="list-inline text-right">
 							<li><a href="home.php">Home</a></li>
-							<li><a href="#">Ayuda</a></li>
+							<li><a href="Ayuda.pdf">Ayuda</a></li>
 							<li><a href="acercaBestnid.php">Acerca de Bestnid</a></li>
 						</ul>
 					</div>

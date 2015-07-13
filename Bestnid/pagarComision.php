@@ -1,11 +1,12 @@
 <?php 
 	include("session.php"); 
-	//chequear que la subasta tenga una oferta ganadora, que el usuario logueado sea el subastador y que la comision no haya sido pagada todavia
+	//chequear que la subasta tenga una oferta ganadora, que el usuario logueado sea el subastador ,que la comision no haya sido pagada todavia y que
+	//el subastador no sea administrador
 	include("conexion.php");
 	$productoDeLaSubasta = mysqli_query ($link, "SELECT * FROM Venta INNER JOIN Oferta ON Venta.idOferta=Oferta.idOferta INNER JOIN Subasta ON Oferta.idSubasta=Subasta.idSubasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto
 		WHERE Venta.idOferta='".$_GET["idOferta"]."' and Venta.comisionPagada = 0 and Subasta.idUsuario='".$_SESSION["idUsuario"]."' ");
 
-	if (mysqli_num_rows($productoDeLaSubasta)==0 || !isset($_GET["idOferta"])) {
+	if (mysqli_num_rows($productoDeLaSubasta)==0 || !isset($_GET["idOferta"]) || $_SESSION["admin"] ) {
 		header ("Location: home.php");
 	}
 	else { 
@@ -165,7 +166,7 @@
 					<div class="col-md-6">
 						<ul class="list-inline text-right">
 							<li><a href="home.php">Home</a></li>
-							<li><a href="#">Ayuda</a></li>
+							<li><a href="Ayuda.pdf">Ayuda</a></li>
 							<li><a href="acercaBestnid.php">Acerca de Bestnid</a></li>
 						</ul>
 					</div>

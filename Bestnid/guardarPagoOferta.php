@@ -69,10 +69,8 @@
 							    	<p class="lead"><?php echo $datosOferta["razon"]; ?></p>
 							  	</div>	
 							</div>
+							<p class="text-danger lead">MONTO PAGADO: <strong>$<?php echo $datosOferta["monto"]; ?></strong></p>
 						</div>
-					</div>
-					<div class="row">
-						<p class="text-danger lead">MONTO PAGADO: <strong>$<?php echo $datosOferta["monto"]; ?></strong></p>
 					</div>
 				</div>
 			</div>
@@ -89,7 +87,7 @@
 					<div class="col-md-6">
 						<ul class="list-inline text-right">
 							<li><a href="home.php">Home</a></li>
-							<li><a href="#">Ayuda</a></li>
+							<li><a href="Ayuda.pdf">Ayuda</a></li>
 							<li><a href="acercaBestnid.php">Acerca de Bestnid</a></li>
 						</ul>
 					</div>
