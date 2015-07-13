@@ -22,9 +22,9 @@
 			if (!isset($_GET["idOferta"])) {
 				header("Location:home.php");
 			}
-			//chequear que el usuario logueado es quien realmente hizo la subasta y que la subasta haya finalizado
+			//chequear que el usuario logueado es quien realmente hizo la subasta, que la subasta haya finalizado, que la oferta existe y que no está reportada
 			$result=mysqli_query($link, " SELECT * FROM Subasta INNER JOIN Oferta ON Oferta.idSubasta=Subasta.idSubasta 
-				WHERE idOferta='".$_GET["idOferta"]."' and Subasta.idUsuario='".$_SESSION["idUsuario"]."' and estado='finalizada' " );
+				WHERE idOferta='".$_GET["idOferta"]."' and Oferta.reportada=0 and Subasta.idUsuario='".$_SESSION["idUsuario"]."' and estado='finalizada' " );
 
 
 			if (mysqli_num_rows($result)==0) {

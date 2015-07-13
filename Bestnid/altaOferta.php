@@ -17,13 +17,8 @@
 		<script src="Bootstrap/js/bootstrap.js"></script>
 		<script src="Bootstrap/js/jquery-ui.js"></script>
 		<script src="Bootstrap/js/validarOferta.js"></script>
-		<script src="Bootstrap/js/jquery.mask.js"></script>
-		<script>
-			(function($){
-		       $("#inputMonto").mask("9999999999");
-			})
 
-		</script>
+		
 	</head>
 	<body>
 		<?php 

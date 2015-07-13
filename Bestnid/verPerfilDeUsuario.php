@@ -64,6 +64,60 @@
 					</div>
 					<h3><strong>Productos subastados</strong></h3>
 					<div class="row">
+						<span>Ordenar por:</span>
+						<ul class="list-inline">
+							<li>
+								<div class="dropdown">
+								  	<button class="btn btn-default dropdown-toggle" type="button" id="dropdownEstado" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+									    Estado
+									    <span class="caret"></span>
+								  	</button>
+									 <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+									  	<li><a href="<?php echo "verPerfilDeUsuario.php?idUsuario=".$_GET["idUsuario"]."&order=estado ASC";?>">Ascendente</a></li>
+									  	<li><a href="<?php echo "verPerfilDeUsuario.php?idUsuario=".$_GET["idUsuario"]."&order=estado DESC";?>">Descendente</a></li>
+									    
+									 </ul>
+								</div>
+							</li>
+							<li>
+								<div class="dropdown">
+								  	<button class="btn btn-default dropdown-toggle" type="button" id="dropdownEstado" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+									    Fecha de finalizaci&oacute;n
+									    <span class="caret"></span>
+								  	</button>
+									 <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+									  	<li><a href="<?php echo "verPerfilDeUsuario.php?idUsuario=".$_GET["idUsuario"]."&order=fecha_cierre ASC";?>">Ascendente</a></li>
+									  	<li><a href="<?php echo "verPerfilDeUsuario.php?idUsuario=".$_GET["idUsuario"]."&order=fecha_cierre DESC";?>">Descendente</a></li>   
+									 </ul>
+								</div>
+							</li>
+							<li>
+								<div class="dropdown">
+								  	<button class="btn btn-default dropdown-toggle" type="button" id="dropdownEstado" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+									    Nombre
+									    <span class="caret"></span>
+								  	</button>
+									 <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+									  	<li><a href="<?php echo "verPerfilDeUsuario.php?idUsuario=".$_GET["idUsuario"]."&order=nombre ASC";?>">Ascendente</a></li>
+									  	<li><a href="<?php echo "verPerfilDeUsuario.php?idUsuario=".$_GET["idUsuario"]."&order=nombre DESC";?>">Descendente</a></li>   
+									 </ul>
+								</div>
+							</li>
+							<li>
+								<div class="dropdown">
+								  	<button class="btn btn-default dropdown-toggle" type="button" id="dropdownEstado" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+									    Fecha de realizaci&oacute;n
+									    <span class="caret"></span>
+								  	</button>
+									 <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+									  	<li><a href="<?php echo "verPerfilDeUsuario.php?idUsuario=".$_GET["idUsuario"]."&order=fecha_realizacion ASC";?>">Ascendente</a></li>
+									  	<li><a href="<?php echo "verPerfilDeUsuario.php?idUsuario=".$_GET["idUsuario"]."&order=fecha_realizacion DESC";?>">Descendente</a></li>   
+									 </ul>
+								</div>
+							</li>
+						</ul>
+					</div>
+					<div class="row">
 					<?php 
 						
 						//cerrar automáticamente las subastas finalizadas que hayan excedido el tiempo máximo para elegir un ganador
@@ -77,11 +131,19 @@
 						//cancelar subastas que finalizaron sin ofertas
 						$result= mysqli_query ($link,"UPDATE Subasta SET estado ='cerrada' WHERE estado='finalizada' and NOT EXISTS (SELECT * FROM Oferta WHERE Oferta.idSubasta=Subasta.idSubasta)");
 
-						$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.estado,Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion, Categoria.nombre AS nomCat 
+						//sino se pasa un criterio de ordenación no se ordenan las subastas
+						if (!isset($_GET["order"]) || ($_GET["order"]!="estado ASC" && $_GET["order"]!="estado DESC" && $_GET["order"]!="fecha_cierre ASC" && $_GET["order"]!="fecha_cierre DESC" && $_GET["order"]!="nombre ASC" && $_GET["order"]!="nombre DESC" && $_GET["order"]!="fecha_realizacion ASC" && $_GET["order"]!="fecha_realizacion DESC") ) {
+							$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.fecha_realizacion, Subasta.estado,Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion, Categoria.nombre AS nomCat 
 								FROM Subasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto 
 								INNER JOIN Categoria ON Producto.idCategoria=Categoria.idCategoria
-								WHERE Subasta.idUsuario='".$_GET["idUsuario"]."' ORDER BY Subasta.fecha_realizacion DESC") or die (mysqli_error($link));
-
+								WHERE Subasta.idUsuario='".$_GET["idUsuario"]."' ORDER BY fecha_realizacion DESC") or die (mysqli_error($link));
+						}
+						else {
+							$result = mysqli_query ($link, "SELECT Subasta.idSubasta,Subasta.fecha_cierre,Subasta.estado,Subasta.fecha_realizacion, Subasta.idUsuario, Producto.imagen, Producto.nombre, Producto.descripcion, Categoria.nombre AS nomCat 
+								FROM Subasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto 
+								INNER JOIN Categoria ON Producto.idCategoria=Categoria.idCategoria
+								WHERE Subasta.idUsuario='".$_GET["idUsuario"]."' ORDER BY ".$_GET["order"]." ") or die (mysqli_error($link));
+						}
 						while ($row=mysqli_fetch_array($result) ) {
 							$resultOf=mysqli_query ($link, "SELECT * FROM Oferta WHERE idSubasta='".$row["idSubasta"]."' and idUsuario='".$_SESSION["idUsuario"]."' ");
 							$numRows = mysqli_num_rows ($resultOf);
@@ -95,6 +157,9 @@
     									<div class='col-md-3'>
     										<div class='row'>
     											<h3>".$row["nombre"]."</h3>
+    										</div>
+    										<div class='row'>
+    											<h5><strong>Realizada: </strong>".date('d-m-Y',strtotime($row["fecha_realizacion"]))."</h5>
     										</div>
     										<div class='row'>
     											<h5><strong>Finaliza: </strong>".date('d-m-Y',strtotime($row["fecha_cierre"]))."</h5>
@@ -133,6 +198,20 @@
     									echo "
     										 <div class='row'>
     										 <a class='btn btn-danger' href='elegirGanador.php?idSubasta=".$row["idSubasta"]."'>Elegir Ganador</a>
+    									     </div>
+    									     ";
+    								}
+    								if ($row["estado"]=="activa" && $row["idUsuario"]==$_SESSION["idUsuario"]) {
+    									echo "
+    										 <div class='row'>
+    										 <a class='btn btn-danger' href='editarSubasta.php?idSubasta=".$row["idSubasta"]."'>Editar Subasta</a>
+    									     </div>
+    									     ";
+    								}
+    								if ($row["estado"]!="cerrada" && ($row["idUsuario"]==$_SESSION["idUsuario"] || $_SESSION["admin"])) {
+    									echo "
+    										 <div class='row'>
+    										 	<a class='btn btn-danger' href='cancelarSubasta.php?idSubasta=".$row["idSubasta"]."'>Cancelar Subasta</a>
     									     </div>
     									     ";
     								}

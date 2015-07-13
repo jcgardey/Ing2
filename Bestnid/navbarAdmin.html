@@ -31,8 +31,10 @@
 									<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Administrar<span class="caret"></span></a>
 									<ul class="dropdown-menu" role="menu">
 										<li><a href="listadoCategorias.php">Categorias</a></li>
-										<li><a href="verGanancias.php">Ganancias</a></li>
 										<li><a href="configuracion.php">Configuraci&oacute;n</a></li>
+										<li><a href="verGanancias.php">Ganancias</a></li>
+										<li><a href="reportes.php">Reportes</a></li>
+										<li><a href="adminUsuarios.php">Usuarios</a></li>
 									</ul>
 							<li>
 						</ul>
@@ -43,14 +45,20 @@
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle text-danger" data-toggle="dropdown" role="button" aria-expanded="false"><?php echo $_SESSION["usuario"]?><span class="caret"></span></a>
 								<ul class="dropdown-menu" role="menu">
-									<li><a href="salir.php">Salir</a></li>
+									<?php 
+										//calcular la cantidad de mensajes sin leer que tiene el admimistrador
+										include ("conexion.php");
+										$mensajesNoLeidos = mysqli_query($link, "SELECT * FROM Mensaje WHERE leido= 0");
+									?>
+									<li><a href="mensajesAdministrador.php">Mensajes <span class="badge"><?php echo mysqli_num_rows($mensajesNoLeidos);?></span></a></li>
 									<li><a href="verDatosPersonales.php">Mis datos</a></li>
 									<li><a href="verSubastasDeUnUsuario.php">Mis subastas</a></li>
 									<li><a href="verOfertasDeUnUsuario.php">Mis ofertas</a></li>
 									<li><a href="verComentariosDeUnUsuario.php">Mis comentarios</a></li>
+									<li><a href="salir.php">Salir</a></li>
 								</ul>
 							<li>
-								<a class="navbar-brand" href="#">Ayuda</a>
+								<a class="navbar-brand" href="Ayuda.pdf">Ayuda</a>
 							</li>	
 						</ul>
 					</div>

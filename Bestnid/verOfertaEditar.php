@@ -22,13 +22,13 @@
 			}
 
 			include ("conexion.php");
-			//chequear que la oferta exista y que el dueño es el usuario logueado
+			//chequear que la oferta exista, que el dueño es el usuario logueado y que la subasta a la cual pertenece la oferta este activa
 			$datosOferta = mysqli_query ($link, "SELECT Subasta.idSubasta, Producto.nombre,Producto.imagen, Producto.descripcion, Oferta.idOferta,
 				Oferta.monto, Oferta.razon 
 				FROM Oferta INNER JOIN Subasta ON Oferta.idSubasta=Subasta.idSubasta
 				INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto 
 				INNER JOIN Usuario ON Usuario.idUsuario=Oferta.idUsuario WHERE Oferta.idOferta='".$_POST["idOferta"]."'
-				and Oferta.idUsuario='".$_SESSION["idUsuario"]."' ") or die (mysqli_error($link));
+				and Oferta.idUsuario='".$_SESSION["idUsuario"]."' and Subasta.estado='activa' ") or die (mysqli_error($link));
 
 			if (mysqli_num_rows($datosOferta)==0) {
 				header("Location: home.php");

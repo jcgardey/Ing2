@@ -4,7 +4,7 @@
 			include ("session.php");
 			//chequear que el usuario logueado es quien realmente hizo la subasta que la subasta haya finalizado o este cerrada
 			$result=mysqli_query($link, " SELECT * FROM Subasta INNER JOIN Oferta ON Oferta.idSubasta=Subasta.idSubasta 
-				WHERE idOferta='".$_GET["idOferta"]."' and Subasta.idSubasta='".$_GET["idSubasta"]."' and Subasta.idUsuario='".$_SESSION["idUsuario"]."' and estado='finalizada' " );
+				WHERE idOferta='".$_GET["idOferta"]."' and Oferta.reportada=0 and Subasta.idSubasta='".$_GET["idSubasta"]."' and Subasta.idUsuario='".$_SESSION["idUsuario"]."' and estado='finalizada' " );
 			
 			$rowSubasta=mysqli_fetch_array($result);
 			

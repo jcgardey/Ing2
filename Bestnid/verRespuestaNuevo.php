@@ -62,7 +62,7 @@
 
 							<a class="btn btn-lg btn-danger" href="<?php echo "altaRespuestaBD.php?"."respuesta=".$_POST["respuesta"]."
 							&idComentario=".$_POST["idComentario"]." "; ?>" >Finalizar</a>
-							<a class="btn btn-lg btn-default" href=<?php echo "altaRespuesta.php?idComentario=".$_POST["idComentario"]." ";?> >Reiniciar</a>
+							<a class="btn btn-lg btn-default" href=<?php echo "verSubasta.php?idSubasta=".$row["idSubasta"]." ";?> >Cancelar</a>
 						</div>
 						
 					</div>

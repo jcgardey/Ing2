@@ -40,6 +40,12 @@
 			window.onload = function () {
 				document.getElementById("btn_actualizar").onclick=validarFormActualizar;
 			}
+
+			function bajaUsuario() {
+				if (confirm("¿Está seguro que desea desactivar su cuenta de Bestnid?\nDeberá contactarse con el adminstrador del sistema para reactivarla")) {
+					window.location = "bajaUsuario.php";
+				}
+			}
 		</script>		
 	</head>
 	<body>
@@ -66,6 +72,11 @@
 			        </ul>
 		        </div>
 				<div class="col-md-7 col-md-offset-1">
+					<?php 
+					//si el usuario logueado no es el administrador, puede desactivar su cuenta
+					if (!$_SESSION["admin"]) { ?>
+						<a class="btn btn-danger" onclick="bajaUsuario()">Desactivar cuenta</a>
+					<?php } ?>
 					<h3 class="text-center">Mis datos personales</h3>
 					<form name="frm-actualizar" id="f_actualizar" action="actualizarDatosPersonales.php" method="POST">
 						<div class="form-group">

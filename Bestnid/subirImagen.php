@@ -1,8 +1,10 @@
 <?php
 	include ("session.php");
-	if($_FILES["imagen_fls"]["type"]!="image/jpeg" && $_FILES["imagen_fls"]["type"]!="image/png"){
+	
+	if($_FILES["imagen_fls"]["type"]!="image/jpeg" && $_FILES["imagen_fls"]["type"]!="image/png") {
 		header("Location: altaProducto.php?error=formato&nombre=".$_POST["nombre"]."&descripcion=".$_POST["descripcion"]);
-	} else {
+	} 
+	else {
 		$archivo = $_FILES["imagen_fls"]["tmp_name"];
 		$destino = "Imagenes/".$_FILES["imagen_fls"]["name"];
 		$nombre = $_POST["nombre"];

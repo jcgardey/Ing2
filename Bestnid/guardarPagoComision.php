@@ -1,5 +1,15 @@
 <?php 
 	include("session.php"); 
+	//chequear que la subasta tenga una oferta ganadora, que el usuario logueado sea el subastador y que la comision no haya sido pagada todavia
+	include("conexion.php");
+	$productoDeLaSubasta = mysqli_query ($link, "SELECT * FROM Venta INNER JOIN Oferta ON Venta.idOferta=Oferta.idOferta INNER JOIN Subasta ON Oferta.idSubasta=Subasta.idSubasta INNER JOIN Producto ON Subasta.idProducto=Producto.idProducto
+		WHERE Venta.idOferta='".$_POST["idOferta"]."' and Venta.comisionPagada = 0 and Subasta.idUsuario='".$_SESSION["idUsuario"]."' ");
+	if (mysqli_num_rows($productoDeLaSubasta)==0 || !isset($_POST["idOferta"])) {
+		header ("Location: home.php");
+	}
+	else {
+		$actualizarVenta = mysqli_query ($link, "UPDATE Venta SET comisionPagada=1 WHERE idOferta='".$_POST["idOferta"]."' ");
+	}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -12,9 +22,12 @@
 		<!-- Optional theme -->
 		<link rel="stylesheet" href="Bootstrap/css/bootstrap-theme.min.css">
 		<link rel="stylesheet" href="estilopropio.css">
+		<link rel="stylesheet" href="Bootstrap/css/jquery-ui.css" />
 
-		<script src="Bootstrap/js/jquery.js"></script>
+		
+		<script src="Bootstrap/js/jquery-1.11.3.js"></script>
 		<script src="Bootstrap/js/bootstrap.js"></script>
+		<script src="Bootstrap/js/jquery-ui.js"></script>
 	</head>
 	<body>
 		<?php 
@@ -26,7 +39,7 @@
 			}
 		?>
 		<section class="main container-fluid">
-			<div class="main row">	
+			<div class="main row">
 				<div class="col-sm-3 col-md-2 sidebar">
 		        	<ul class="nav nav-sidebar"> 	
 			            <li class="active"><a class="text-danger" href="home.php"><strong>Categorias</strong></a></li>
@@ -39,49 +52,26 @@
 						?>
 			        </ul>
 		        </div>
-		        <div class="col-sm-3 col-md-9">
-		        	<?php			          
-						include("conexion.php");
-						
-						$result = mysqli_query ($link, "SELECT Oferta.idOferta,Oferta.razon,Oferta.monto,Oferta.idSubasta,Subasta.estado FROM OFerta INNER JOIN Subasta ON Oferta.idSubasta=Subasta.idSubasta WHERE Oferta.idUsuario='".$_SESSION["idUsuario"]."'
-						ORDER BY fecha DESC")
-						or die (mysqli_error($link));
-
-						//en caso que el usuario no posea ofertas realizdas
-						if (mysqli_num_rows($result)==0) {
-							echo "<h3 class='text-danger'>No ha realizado ninguna oferta</h3>";
-						}
-						
-						while ($row=mysqli_fetch_array($result) ) {
-							echo "<div class='well well-sm row'>
-  									<div class='col-md-10'>
-    									<h4 class='text-left text-danger'>Raz&oacute;n</h4>
-    									<p>".$row["razon"]."</p>
-    									<h4 class='text-left text-danger'>Monto</h4>
-    									<p>$".$row["monto"]."</p>
-    								</div>;
-    								<div class='col-md-2'>
-    									<div class='row'>
-    										<a class='btn btn-danger' href='verSubasta.php?idSubasta=".$row["idSubasta"]."'>Ver Producto</a>
-    									</div>";
-    								if ($row["estado"]=='activa') {	
-    									echo "
-    									<br />
-    									<div class='row'>
-    										<a class='btn btn-danger' href='verOfertaCancelar.php?idOferta=".$row["idOferta"]."'>Cancelar Oferta</a>
-    									</div>
-    									<br />
-    									<div class='row'>
-    										<a class='btn btn-danger' href='editarOferta.php?idOferta=".$row["idOferta"]."'>Editar Oferta</a>
-    									</div>";
-    								}
-    								echo "
-    								</div>
-    							  </div>";			
-						}
-					?>
-		        </div>
-		     </div>
+				<div class="col-md-10">
+					<div class="row text-center">
+						<h3>EL PAGO FUE REALIZADO EXIT&Oacute;SAMENTE</h3>
+						<br />
+					</div>
+					<div class="row">
+						<div class="col-md-9 col-md-offset-1">
+							<?php 
+								$datosProducto = mysqli_fetch_array($productoDeLaSubasta);
+							?>
+							<div class="panel panel-default">
+								<div class="panel-body">
+							    	<p><strong>COMISI&Oacute;N:</strong><?php echo $datosProducto["porcentaje"]; ?>%</p>
+							    	<p><strong>MONTO PAGADO:$</strong><?php echo ($datosProducto["porcentaje"] * $datosProducto ["monto"]) / 100; ?></p>
+							  	</div>	
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 		</section>
 		<footer class="btn-danger">
 			<div class="container">

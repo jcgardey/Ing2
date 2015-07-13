@@ -1,5 +1,19 @@
-<?php include("session.php"); ?>
-<DOCTYPE html>
+<?php
+	include("session.php"); 
+	//chequear que la oferta sea una oferta ganadora de una subasta, que el usuario logueado sea el ofertante y que no haya sido pagada todavia
+	include("conexion.php");
+	$existeOfertaGanadora = mysqli_query ($link, "SELECT * FROM Venta INNER JOIN Oferta ON Venta.idOferta=Oferta.idOferta 
+		WHERE Venta.idOferta='".$_POST["idOferta"]."' and Venta.ofertaPagada = 0 and Oferta.idUsuario='".$_SESSION["idUsuario"]."' ");
+
+	if (mysqli_num_rows($existeOfertaGanadora)==0 || !isset($_POST["idOferta"])) {
+		header ("Location: home.php");
+	}
+	else {
+		$actualizarVenta= mysqli_query ($link, "UPDATE Venta SET ofertaPagada=1 WHERE idOferta='".$_POST["idOferta"]."' ");
+	}
+
+?>
+<!DOCTYPE html>
 <html lang="es">
 	<head>
 		<meta charset="utf-8">
@@ -10,17 +24,15 @@
 		<!-- Optional theme -->
 		<link rel="stylesheet" href="Bootstrap/css/bootstrap-theme.min.css">
 		<link rel="stylesheet" href="estilopropio.css">
+		<link rel="stylesheet" href="Bootstrap/css/jquery-ui.css" />
 
-		<script src="Bootstrap/js/jquery.js"></script>
+		
+		<script src="Bootstrap/js/jquery-1.11.3.js"></script>
 		<script src="Bootstrap/js/bootstrap.js"></script>
+		<script src="Bootstrap/js/jquery-ui.js"></script>
 	</head>
 	<body>
 		<?php 
-			//chequeo de parametros
-			if (!isset($_POST["idSubasta"]) || !isset($_POST["texto"])) {
-				header("Location: home.php");
-			}
-			
 			if ($_SESSION["admin"]==true) {
 				include ("navbarAdmin.html"); 
 			}
@@ -42,33 +54,25 @@
 						?>
 			        </ul>
 		        </div>
-				<div class="col-md-9">
-					<div class="row well well-lg">
-						<?php
-	                    	include ("conexion.php");
-	                    	$result = mysqli_query ($link,"SELECT * FROM Subasta INNER JOIN Producto ON  
-	                    		Subasta.idProducto = Producto.idProducto WHERE 
-	                    		Subasta.idSubasta='".$_POST["idSubasta"]."' ");
-	                     	$row= mysqli_fetch_array ($result);
-	                    ?>
-	                    <div class="col-md-3">
-							<h2>Finaliza tu Comentario</h2>
+				<div class="col-md-10">
+					<div class="row text-center">
+						<h3>EL PAGO FUE REALIZADO EXIT&Oacute;SAMENTE</h3>
+						<br />
+					</div>
+					<div class="row">
+						<div class="col-md-9 col-md-offset-1">
+							<?php 
+								$datosOferta = mysqli_fetch_array($existeOfertaGanadora);
+							?>
+							<div class="panel panel-default">
+								<div class="panel-body">
+							    	<p class="lead"><?php echo $datosOferta["razon"]; ?></p>
+							  	</div>	
+							</div>
 						</div>
-						<div class="col-md-6">
-							<h3>Nombre del Producto:</h3>
-							<p class='lead'><?php echo $row["nombre"]; ?></p>
-							<h3>Descripci&oacute;n del Producto:</h3>
-							<p class='lead'><?php echo $row["descripcion"]; ?></p>
-							<h3>Comentario:</h3>
-							<p class='lead'><?php echo $_POST["texto"]; ?></p>
-
-							<a class="btn btn-lg btn-danger" href="<?php echo "altaComentarioBD.php?"."texto=".$_POST["texto"]."
-							&idSubasta=".$_POST["idSubasta"]." "; ?>" >Finalizar</a>
-							<a class="btn btn-lg btn-default" href=<?php echo "verSubasta.php?idSubasta=".$_POST["idSubasta"]." ";?> >Cancelar</a>
-						</div>
-						<div class="col-md-3">
-							<img src='<?php echo $row["imagen"]; ?>' style=" max width:300px; max height:200px;" class="img-responsive" alt="imagen" />
-						</div>
+					</div>
+					<div class="row">
+						<p class="text-danger lead">MONTO PAGADO: <strong>$<?php echo $datosOferta["monto"]; ?></strong></p>
 					</div>
 				</div>
 			</div>

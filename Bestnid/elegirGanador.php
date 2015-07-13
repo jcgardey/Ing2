@@ -50,9 +50,10 @@
 		        </div>
 		        <div class="col-sm-3 col-md-9">
 		        	<?php			          
+						//las ofertas que fueron reportadas no pueden ser elegidas como ganadoras
 						include("conexion.php");
 						$result = mysqli_query ($link, "SELECT Oferta.idUsuario,Oferta.idOferta,Oferta.razon,Usuario.nombre_usuario FROM Oferta INNER JOIN Usuario ON Oferta.idUsuario=Usuario.idUsuario
-							WHERE idSubasta='".$_GET["idSubasta"]."' ");
+							WHERE idSubasta='".$_GET["idSubasta"]."' and Oferta.reportada=0 ");
 						while ($row=mysqli_fetch_array($result) ) {
 							echo "<div class='panel panel-default row'>
   									<div class=panel-body>

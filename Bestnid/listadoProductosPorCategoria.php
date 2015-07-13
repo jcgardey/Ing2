@@ -172,6 +172,20 @@
     										 <a class='btn btn-danger' href='elegirGanador.php?idSubasta=".$row["idSubasta"]."'>Elegir Ganador</a>
     									     ";
     								}
+    								if (isset($_SESSION["idUsuario"]) && $row["estado"]=="activa" && $row["idUsuario"]==$_SESSION["idUsuario"]) {
+    									echo "
+    										 <div class='row'>
+    										 <a class='btn btn-danger' href='editarSubasta.php?idSubasta=".$row["idSubasta"]."'>Editar Subasta</a>
+    									     </div>
+    									     ";
+    								}
+    								if (isset($_SESSION["idUsuario"]) && $row["estado"]!="cerrada" && ($row["idUsuario"]==$_SESSION["idUsuario"] || $_SESSION["admin"]) ) {
+    									echo "
+    										 <div class='row'>
+    										 <a class='btn btn-danger' href='cancelarSubasta.php?idSubasta=".$row["idSubasta"]."'>Cancelar Subasta</a>
+    									     </div>
+    									     ";
+    								}
     								echo "
   								  		</div>
   								  	</div>
